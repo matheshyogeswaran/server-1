@@ -5,8 +5,9 @@ const mongoose = require('mongoose');
 
 app.use(cors()); 
 app.use(express.json());
-app.use(require("./routes/record"));
+app.use(require("./routes/sample"));
 app.use(require("./routes/authentication"));
+app.use(require("./routes/users"));
 
 mongoose.set('strictQuery', false);
 //  format
