@@ -18,4 +18,20 @@ userRoutes.route("/users/showAllUsers").get(function (req, res) {
     });
 });
 
+userRoutes.route("/users/isUserAvailable").post(function (req, res) {
+    const email = req.body.email;
+    User.findOne({emailAddress:email}, (err, users) => {
+        if (err) {
+            res.send(err);
+        } else {
+            if (users) {
+                res.json({status:true});
+            } else {
+                res.json({status:false});
+            }
+        }
+    });
+});
+
+
 module.exports = userRoutes;
