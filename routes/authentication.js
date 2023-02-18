@@ -22,7 +22,6 @@ async function verifyGoogleToken(token) {
     }
 }
 
-
 authenticationRoutes.route("/authentication/login").post(async (req, res) => {
     try {
         if (req.body.credential) {
@@ -32,8 +31,10 @@ authenticationRoutes.route("/authentication/login").post(async (req, res) => {
                 // return res.status(400).json({ message: "Login failed" }); // This is the original code
             }
             const profile = verificationResponse?.payload;
+
             res.status(201).json({
                 message: "Login was successfull",
+                // userAvailability:status,
                 user: {
                     firstName: profile?.given_name,
                     lastName: profile?.family_name,
@@ -51,7 +52,6 @@ authenticationRoutes.route("/authentication/login").post(async (req, res) => {
         });
     }
 });
-
 
 authenticationRoutes.route("/authentication/addFurtherDetails").post(async (req, res) => {
     // console.log(req.body);
@@ -74,5 +74,27 @@ authenticationRoutes.route("/authentication/addFurtherDetails").post(async (req,
             res.status(500).send({ error: 'Error saving data to the database' });
         });
 });
+
+authenticationRoutes.route("/authentication/checkTokenValidity").post(async (req, res) => {
+    // console.log(req.body.authorization)
+    const token = req.body.authorization;
+    if (!token) {
+        return res.send({ message: 'No token provided.', status: false });
+    }
+    try {
+        const decoded = jwt.verify(token, "This is my new secret");
+        console.log(decoded);
+        if (decoded.exp <= Date.now() / 1000) {
+            return res.send({ message: 'Token has expired.', status: false });
+        }
+        return res.send({ message: 'Token is valid.', status: true });
+        // req.userId = decoded.id;
+    } catch (err) {
+        console.log(err);
+        return res.send({ message: 'Token Expired.', status: false });
+    }
+
+});
+
 
 module.exports = authenticationRoutes;
