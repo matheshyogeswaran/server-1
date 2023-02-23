@@ -2,16 +2,6 @@ const express = require("express");
 const jobtitleRoutes = express.Router();
 const Jobtitle = require("../models/jobtitle.model");
 
-jobtitleRoutes.route("/jobtitles").get(function (req, res) {
-  res.json([
-    {
-      url: "http://localhost:1337/jobtitles/showAllJobtitles",
-      method: "get",
-      desc: "Shows all jobtitle's data from database",
-    },
-  ]);
-});
-
 jobtitleRoutes.route("/jobtitles/showAllJobtitles").get(function (req, res) {
   Jobtitle.find({}, (err, jobtitles) => {
     if (err) {
@@ -22,9 +12,7 @@ jobtitleRoutes.route("/jobtitles/showAllJobtitles").get(function (req, res) {
   });
 });
 
-jobtitleRoutes
-  .route("/jobtitles/isJobtitleAvailable")
-  .post(function (req, res) {
+jobtitleRoutes.route("/jobtitles/isJobtitleAvailable").post(function (req, res) {
     const jobTitlename = req.body.jobTitlename;
     Jobtitle.findOne({ jobtitlename: jobTitlename }, (err, jobtitles) => {
       if (err) {
@@ -40,6 +28,6 @@ jobtitleRoutes
         }
       }
     });
-  });
+});
 
 module.exports = jobtitleRoutes;

@@ -1,15 +1,14 @@
 const express = require("express");
 const authenticationRoutes = express.Router();
-const User = require('../models/user.model');
 const { OAuth2Client } = require('google-auth-library');
-// const client = new OAuth2Client("707797281139-4aqd3htq7bnut6nsp76ufc448svl64r9.apps.googleusercontent.com");
 const jwt = require('jsonwebtoken');
 const jwt_decode = require("jwt-decode");
+require("dotenv").config();
+const User = require('../models/user.model');
 
-const GOOGLE_CLIENT_ID = "707797281139-4aqd3htq7bnut6nsp76ufc448svl64r9.apps.googleusercontent.com";
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+
 const client = new OAuth2Client(GOOGLE_CLIENT_ID);
-// let DB = [];
-
 async function verifyGoogleToken(token) {
     try {
         const ticket = await client.verifyIdToken({
@@ -22,16 +21,18 @@ async function verifyGoogleToken(token) {
     }
 }
 
-
 authenticationRoutes.route("/authentication/login").post(async (req, res) => {
     try {
         if (req.body.credential) {
             const verificationResponse = await verifyGoogleToken(req.body.credential);
             if (verificationResponse.error) {
-                return res.status(400).json({ message: verificationResponse.error }); // this is only for testing purpose
-                // return res.status(400).json({ message: "Login failed" }); // This is the original code
+                // this is only for testing purpose
+                return res.status(400).json({ message: verificationResponse.error }); 
+                // This is the original code
+                // return res.status(400).json({ message: "Login failed" }); 
             }
             const profile = verificationResponse?.payload;
+            console.log(profile);
             res.status(201).json({
                 message: "Login was successfull",
                 user: {
@@ -39,11 +40,12 @@ authenticationRoutes.route("/authentication/login").post(async (req, res) => {
                     lastName: profile?.family_name,
                     picture: profile?.picture,
                     email: profile?.email,
-                    token: jwt.sign({ email: profile?.email }, "This is my new secret", {
-                        expiresIn: "1h",
+                    token: jwt.sign({ email: profile?.email }, process.env.JWT_SECRET, {
+                        expiresIn: process.env.JWT_EXP,
                     }),
                 },
             });
+            
         }
     } catch (error) {
         res.status(500).json({
