@@ -9,7 +9,7 @@ app.use(
         methods: "GET,POST,PUT,DELETE,OPTIONS",
     })
 );
-
+app.use(express.urlencoded({ extended: true })); // if we want to test with postman x-www-form-urlencoded
 app.use(express.json());
 //route imports
 app.use(require("./routes/sample"));
