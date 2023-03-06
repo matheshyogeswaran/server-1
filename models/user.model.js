@@ -8,6 +8,7 @@ const User = new mongoose.Schema(
         phoneNumber: { type: String, required: true },
         emailAddress: { type: String, required: true, unique: true},
         department: { type: String, required: true },
+        userRole: { type: String, required: true, default:"Hired Employee" },
         jobPosition: { type: String, required: true },
         verified: { type: String,  default:"false"},
         userStatus: { type: String,  default:"active" },

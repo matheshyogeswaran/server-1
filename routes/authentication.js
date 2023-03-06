@@ -34,12 +34,19 @@ authenticationRoutes.route("/authentication/login").post(async (req, res) => {
                 // return res.status(400).json({ message: "Login failed" }); 
             }
             const profile = verificationResponse?.payload;
-            console.log(profile);
+
+            const userDocument = await User.findOne({ emailAddress: profile?.email });
+
+            console.log(userDocument)
+
+            // console.log(profile);
             res.status(201).json({
                 message: "Login was successfull",
                 user: {
                     firstName: profile?.given_name,
                     lastName: profile?.family_name,
+                    userID: userDocument._id,
+                    userRole: userDocument.userRole,
                     picture: profile?.picture,
                     email: profile?.email,
                     token: jwt.sign({ email: profile?.email }, process.env.JWT_SECRET, {
@@ -78,7 +85,7 @@ authenticationRoutes.route("/authentication/addFurtherDetails").post(async (req,
             res.status(500).send({ error: 'Error saving data to the database' });
         });
 
-        // mailer.initiateMail("s.s.raguraj@gmail.com","NETS - Lambda", "Signup Success");
+    // mailer.initiateMail("s.s.raguraj@gmail.com","NETS - Lambda", "Signup Success");
 });
 
 
@@ -90,7 +97,7 @@ authenticationRoutes.route("/authentication/verifyToken").post(async (req, res) 
                 {
                     message: "Token is Invalid or Expired",
                     status: false,
-                    expTime:expireTime
+                    expTime: expireTime
                 }
             );
         } else {
@@ -98,7 +105,7 @@ authenticationRoutes.route("/authentication/verifyToken").post(async (req, res) 
                 {
                     message: decoded,
                     status: true,
-                    expTime:expireTime
+                    expTime: expireTime
                 }
             );
         }

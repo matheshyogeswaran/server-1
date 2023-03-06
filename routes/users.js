@@ -1,6 +1,7 @@
 const express = require("express");
 const userRoutes = express.Router();
 const User = require('../models/user.model');
+const UserRole = require("../models/userRole.model")
 
 userRoutes.route("/users/showAllUsers").get(function (req, res) {
     User.find({}, (err, users) => {
@@ -30,6 +31,8 @@ userRoutes.route("/users/isUserAvailable").post(function (req, res) {
         }
     });
 });
+
+
 
 
 module.exports = userRoutes;

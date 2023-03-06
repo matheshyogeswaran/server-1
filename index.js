@@ -15,6 +15,7 @@ app.use(express.json());
 app.use(require("./routes/sample"));
 app.use(require("./routes/authentication"));
 app.use(require("./routes/users"));
+app.use(require("./routes/userroles"));
 
 mongoose.set('strictQuery', false);
 // format
