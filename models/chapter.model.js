@@ -1,16 +1,16 @@
 const mongoose = require("mongoose");
-const Jobtitle = new mongoose.Schema(
+const Chapter = new mongoose.Schema(
   {
-    jobTitlename: { type: String, required: true, unique: true },
+    chaptername: { type: String, required: true, unique: true },
     depID: { type: String },
     createdBy: { type: String, required: true },
     createdOn: { type: String, default: Date.now },
-    chaptersAllocated: { type: String },
+    offeredInJobTitles: { type: String },
     reasons: [{ type: Object }],
   },
   {
-    collection: "jobtitles",
+    collection: "chapters",
   }
 );
-const model = mongoose.model("JobtitleData", Jobtitle);
+const model = mongoose.model("ChapterData", Chapter);
 module.exports = model;

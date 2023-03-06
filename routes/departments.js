@@ -2,7 +2,19 @@ const express = require("express");
 const departmentRoutes = express.Router();
 const Department = require("../models/department.model");
 
-departmentRoutes.route("/departments/showAllDepartments").get(function (req, res) {
+departmentRoutes.route("/departments").get(function (req, res) {
+  res.json([
+    {
+      url: "http://localhost:1337/departments/showAllDepartments",
+      method: "get",
+      desc: "Shows all department's data from database",
+    },
+  ]);
+});
+
+departmentRoutes
+  .route("/departments/showAllDepartments")
+  .get(function (req, res) {
     Department.find({}, (err, departments) => {
       if (err) {
         res.send(err);
@@ -12,7 +24,9 @@ departmentRoutes.route("/departments/showAllDepartments").get(function (req, res
     });
   });
 
-departmentRoutes.route("/departments/isDepartmentAvailable").post(function (req, res) {
+departmentRoutes
+  .route("/departments/isDepartmentAvailable")
+  .post(function (req, res) {
     const depName = req.body.depName;
     Department.findOne({ departmentname: depName }, (err, departments) => {
       if (err) {
@@ -101,7 +115,9 @@ departmentRoutes.route("/departments/editDepartment").post(async (req, res) => {
   // ------------------------------------------------------------------------------
 });
 
-departmentRoutes.route("/departments/deleteDepartment").post(async (req, res) => {
+departmentRoutes
+  .route("/departments/deleteDepartment")
+  .post(async (req, res) => {
     id = req.body.id;
     reason = req.body.reason;
     try {
@@ -117,6 +133,5 @@ departmentRoutes.route("/departments/deleteDepartment").post(async (req, res) =>
         status: false,
       });
     }
-});
-
+  });
 module.exports = departmentRoutes;
