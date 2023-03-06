@@ -16,6 +16,10 @@ app.use(require("./routes/sample"));
 app.use(require("./routes/authentication"));
 app.use(require("./routes/users"));
 app.use(require("./routes/userroles"));
+app.use(require("./routes/departments"));
+app.use(require("./routes/jobtitles"));
+app.use(require("./routes/chapters"));
+
 
 mongoose.set('strictQuery', false);
 // format
