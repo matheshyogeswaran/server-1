@@ -30,18 +30,34 @@ authenticationRoutes.route("/authentication/login").post(async (req, res) => {
             }
             const profile = verificationResponse?.payload;
 
-            res.status(201).json({
-                message: "Login was successfull",
-                user: {
-                    firstName: profile?.given_name,
-                    lastName: profile?.family_name,
-                    picture: profile?.picture,
-                    email: profile?.email,
-                    token: jwt.sign({ email: profile?.email }, process.env.JWT_SECRET, {
-                        expiresIn: "1h",
-                    }),
-                },
-            });
+            const userDocument = await User.findOne({ emailAddress: profile?.email });
+            if (userDocument) {
+                res.status(200).json({
+                    message: "Login was successfull",
+                    user: {
+                        firstName: profile?.given_name,
+                        lastName: profile?.family_name,
+                        picture: profile?.picture,
+                        email: profile?.email,
+                        userID: userDocument._id,
+                        userRole: userDocument.userRole,
+                        token: jwt.sign({ email: profile?.email }, process.env.JWT_SECRET, {
+                            expiresIn: "1h",
+                        }),
+                    },
+                });
+            } else {
+                res.status(200).json({
+                    message: "Login was successfull",
+                    user: {
+                        firstName: profile?.given_name,
+                        lastName: profile?.family_name,
+                        picture: profile?.picture,
+                        email: profile?.email,
+                    },
+                });
+            }
+
         }
     } catch (error) {
         res.status(500).json({
