@@ -2,16 +2,6 @@ const express = require("express");
 const departmentRoutes = express.Router();
 const Department = require("../models/department.model");
 
-departmentRoutes.route("/departments").get(function (req, res) {
-  res.json([
-    {
-      url: "http://localhost:1337/departments/showAllDepartments",
-      method: "get",
-      desc: "Shows all department's data from database",
-    },
-  ]);
-});
-
 departmentRoutes
   .route("/departments/showAllDepartments")
   .get(function (req, res) {
