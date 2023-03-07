@@ -99,7 +99,7 @@ authenticationRoutes.route("/authentication/verifyToken").post(async (req, res) 
                 {
                     message: "Token is Invalid or Expired",
                     status: false,
-                    expTime: expireTime
+                    expTime: "1h"
                 }
             );
         } else {
