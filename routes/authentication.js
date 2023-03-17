@@ -41,7 +41,7 @@ authenticationRoutes.route("/authentication/login").post(async (req, res) => {
                         email: profile?.email,
                         userID: userDocument._id,
                         userRole: userDocument.userRole,
-                        token: jwt.sign({ email: profile?.email }, process.env.JWT_SECRET, {
+                        token: jwt.sign({ userData:userDocument }, process.env.JWT_SECRET, {
                             expiresIn: "1h",
                         }),
                     },
