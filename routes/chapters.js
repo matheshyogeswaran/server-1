@@ -2,15 +2,6 @@ const express = require("express");
 const chapterRoutes = express.Router();
 const Chapter = require("../models/chapter.model");
 
-chapterRoutes.route("/chapters").get(function (req, res) {
-  res.json([
-    {
-      url: "http://localhost:1337/chapters/showAllChapters",
-      method: "get",
-      desc: "Shows all Chapter's data from database",
-    },
-  ]);
-});
 
 chapterRoutes.route("/chapters/showAllChapters").get(function (req, res) {
   Chapter.find({}, (err, chapters) => {
