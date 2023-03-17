@@ -1,3 +1,4 @@
+
 const express = require('express');
 const app = express();
 const cors = require('cors');
@@ -11,6 +12,14 @@ app.use(
 );
 app.use(express.urlencoded({ extended: true })); // if we want to test with postman x-www-form-urlencoded
 app.use(express.json());
+
+const user = require("./Routes/user");
+const unit = require("./Routes/unit");
+const chapter = require("./Routes/chapter");
+const overviewReport = require("./Routes/overviewReport");
+const quizSubmission = require("./Routes/quizSubmissions");
+const KtSession = require("./Routes/ktsession");
+
 //route imports
 app.use(require("./routes/sample"));
 app.use(require("./routes/authentication"));
@@ -19,6 +28,13 @@ app.use(require("./routes/userroles"));
 app.use(require("./routes/departments"));
 app.use(require("./routes/jobtitles"));
 app.use(require("./routes/chapters"));
+
+app.use(user);
+app.use(unit);
+app.use(chapter);
+app.use(overviewReport);
+app.use(quizSubmission);
+app.use(KtSession);
 
 
 mongoose.set('strictQuery', false);
