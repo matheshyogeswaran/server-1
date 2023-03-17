@@ -24,7 +24,7 @@ chapterRoutes.route("/chapters/showAllChapters").get(function (req, res) {
 
 chapterRoutes.route("/chapters/isChapterAvailable").post(function (req, res) {
   const chaptername = req.body.chaptername;
-  Chapter.findOne({ chaptername: chaptername }, (err, chapters) => {
+  Chapter.findOne({ chapterName: chaptername }, (err, chapters) => {
     if (err) {
       console.log(err);
       res.send(err);
@@ -42,13 +42,13 @@ chapterRoutes.route("/chapters/isChapterAvailable").post(function (req, res) {
 
 chapterRoutes.route("/chapters/addChapter").post(async (req, res) => {
   // console.log(req.body);
-  const chaptername = req.body.chapterName;
+  const chapterName = req.body.chapterName;
   const depID = req.body.depID;
   const createdBy = "Name";
   const createdOn = Date.now();
   console.log(chaptername);
   const chapterDetails = new Chapter({
-    chaptername,
+    chapterName,
     depID,
     createdBy,
     createdOn,
@@ -90,7 +90,7 @@ chapterRoutes.route("/chapters/editChapter").post(async (req, res) => {
     document.reasons.push(newReasonObject);
     Chapter.updateOne(
       { _id: editedId },
-      { $set: { chaptername: newName, reasons: document.reasons } }
+      { $set: { chapterName: newName, reasons: document.reasons } }
     )
       .then((result) => {
         return res.json({
