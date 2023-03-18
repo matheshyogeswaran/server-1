@@ -22,7 +22,6 @@ Article.post("/articleRatings/:empId", async (req, res) => {
   let overAllCommData = [];
   let overAllClarityData = [];
   let overAllKnowledgeAndSkillData = [];
-  console.log(articleRatings);
 
   for (let ratings of articleRatings) {
     //data to progress bar

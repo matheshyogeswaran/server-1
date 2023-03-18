@@ -6,7 +6,7 @@ const UserRole = new mongoose.Schema(
     availableUsers: [{ type: mongoose.Types.ObjectId, ref: "UserData" }],
   },
   {
-    collection: "userRoles",
+    collection: "userroles",
   }
 );
 const model = mongoose.model("userRole", UserRole);
