@@ -2,12 +2,12 @@ const mongoose = require("mongoose");
 const Article = new mongoose.Schema(
   {
     articleName: { type: String },
-    overallRating: { type: String },
-    overallQuality: { type: String },
-    overallComm: { type: String },
-    overallClarity: { type: String },
-    overallKnowledgeAndSkill: { type: String },
-    createdBy: { type: mongoose.Types.ObjectId, ref: "users" },
+    overallRating: { type: Number },
+    overallQuality: { type: Number },
+    overallComm: { type: Number },
+    overallClarity: { type: Number },
+    overallKnowledgeAndSkill: { type: Number },
+    createdBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
   },
   {
     collection: "articles",

@@ -8,6 +8,7 @@ KtSession.post("/ktsessionRatings/:empId", async (req, res) => {
   let reqEmpId = req.params.empId;
   let [{ _id }] = await Users.find({ empId: reqEmpId }).select({ _id: 1 });
   let ktSessionRatings = await KtSessions.find({ createdBy: _id });
+
   let overAllRating = 0;
   let overAllQuality = 0;
   let overAllComm = 0;
@@ -20,12 +21,6 @@ KtSession.post("/ktsessionRatings/:empId", async (req, res) => {
   let overAllCommData = [];
   let overAllClarityData = [];
   let overAllKnowledgeAndSkillData = [];
-
-  let count1 = 0;
-  let count2 = 0;
-  let count3 = 0;
-  let count4 = 0;
-  let count5 = 0;
 
   for (let ratings of ktSessionRatings) {
     //data to progress bar
@@ -42,26 +37,42 @@ KtSession.post("/ktsessionRatings/:empId", async (req, res) => {
     overAllClarity += ratings.overallClarity;
     overAllKnowledgeAndSkill += ratings.overallKnowledgeAndSkill;
   }
+
   //progressbar data calculation
-  overAllRatingData.map((data) =>
-    data === 1
-      ? count1++
-      : data === 2
-      ? count2++
-      : data === 3
-      ? count3++
-      : data === 4
-      ? count4++
-      : count5++
-  );
-  let totalCount = count1 + count2 + count3 + count4 + count5;
-  overAllRatingData = [
-    (count1 / totalCount) * 100,
-    (count2 / totalCount) * 100,
-    (count3 / totalCount) * 100,
-    (count4 / totalCount) * 100,
-    (count5 / totalCount) * 100,
-  ];
+  const individualRates = (overAllRatingData) => {
+    let count1 = 0;
+    let count2 = 0;
+    let count3 = 0;
+    let count4 = 0;
+    let count5 = 0;
+    overAllRatingData.map((data) =>
+      data === 1
+        ? count1++
+        : data === 2
+        ? count2++
+        : data === 3
+        ? count3++
+        : data === 4
+        ? count4++
+        : count5++
+    );
+    let totalCount = count1 + count2 + count3 + count4 + count5;
+    overAllRatingData = [
+      parseFloat(((count1 / totalCount) * 100).toFixed(2)),
+      parseFloat(((count2 / totalCount) * 100).toFixed(2)),
+      parseFloat(((count3 / totalCount) * 100).toFixed(2)),
+      parseFloat(((count4 / totalCount) * 100).toFixed(2)),
+      parseFloat(((count5 / totalCount) * 100).toFixed(2)),
+    ];
+
+    return overAllRatingData;
+  };
+
+  overAllRatingData = individualRates(overAllRatingData);
+  overAllQualityData = individualRates(overAllQualityData);
+  overAllCommData = individualRates(overAllCommData);
+  overAllClarityData = individualRates(overAllClarityData);
+  overAllKnowledgeAndSkillData = individualRates(overAllKnowledgeAndSkillData);
 
   //rating
   let finalOverAllRating = (overAllRating / ktSessionRatings.length).toFixed(1);
@@ -76,6 +87,13 @@ KtSession.post("/ktsessionRatings/:empId", async (req, res) => {
     overAllKnowledgeAndSkill / ktSessionRatings.length
   ).toFixed(1);
 
+  let ratingData = [
+    overAllQualityData,
+    overAllCommData,
+    overAllClarityData,
+    overAllKnowledgeAndSkillData,
+  ];
+
   let ktSessionRatingsData = {
     finalOverAllRating,
     finalOverAllQuality,
@@ -84,6 +102,7 @@ KtSession.post("/ktsessionRatings/:empId", async (req, res) => {
     finalOverAllKnowledgeAndSkill,
     numOfKtSessions: ktSessionRatings.length,
     overAllRatingData,
+    ratingData,
   };
   res.json(ktSessionRatingsData);
 });

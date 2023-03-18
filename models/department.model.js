@@ -3,7 +3,7 @@ const Department = new mongoose.Schema(
   {
     depName: { type: String, required: true, unique: true },
     createdOn: { type: Date, default: Date.now },
-    createdBy: { type: String, required: true },
+    createdBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
     jobTitles: [{ jobTitle: { type: String } }],
     reasons: [{ type: Object }],
   },
