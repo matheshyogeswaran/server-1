@@ -1,9 +1,9 @@
-const express = require("express");
-const user = express.Router();
+// const express = require("express");
+// const user = express.Router();
 
-const users = require("../models/user.model");
-const userRoles = require("../models/userRole.model");
-const departments = require("../models/department.model");
+// const users = require("../models/user.model");
+// const userRoles = require("../models/userRole.model");
+// const departments = require("../models/department.model");
 
 // user.get("/users", async (req, res) => {
 //   let userWithUserRoles = [];
@@ -40,4 +40,4 @@ const departments = require("../models/department.model");
 //   res.json(finalData);
 // });
 
-module.exports = user;
+// module.exports = user;
