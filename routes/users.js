@@ -13,19 +13,17 @@ userRoutes.route("/users/showAllUsers").get(function (req, res) {
     });
 });
 
-userRoutes.route("/users/isUserAvailable").post(function (req, res) {
+userRoutes.route("/users/isUserAvailable").post(async (req, res) => {
     const email = req.body.email;
-    User.findOne({emailAddress:email}, (err, users) => {
+    // const count = await User.estimatedDocumentCount({});
+    User.findOne({ emailAddress: email }, (err, users) => {
         if (err) {
-                // console.log(err)
-                res.send(err);
+            res.send(err);
         } else {
             if (users) {
-                res.json({status:true});
-                // console.log(true)
+                res.json({ status: true });
             } else {
-                res.json({status:false});
-                // console.log(false)
+                res.json({ status: false });
 
             }
         }
