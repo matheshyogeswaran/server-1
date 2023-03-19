@@ -1,4 +1,3 @@
-
 const express = require("express");
 const chapterRoutes = express.Router();
 const Chapter = require("../models/chapter.model");
@@ -15,6 +14,12 @@ chapterRoutes.route("/chapters").get(function (req, res) {
 
 chapterRoutes.route("/chapters/showAllChapters").get(async (req, res) => {
   const chapters = await Chapter.find({}).populate("depID")
+  res.json(chapters);
+});
+
+chapterRoutes.route("/chapters/getEnrolledChapters/:depID").get(async (req, res) => {
+  const depID = req.params.depID;
+  const chapters = await Chapter.find({ depID: depID }).populate("depID")
   res.json(chapters);
 });
 
@@ -40,7 +45,7 @@ chapterRoutes.route("/chapters/addChapter").post(async (req, res) => {
   // console.log(req.body);
   const chaptername = req.body.chapterName;
   const depID = req.body.depID;
-  const createdBy = "Name";
+  const createdBy = req.body.userID;
   const createdOn = Date.now();
   console.log(chaptername);
   const chapterDetails = new Chapter({
