@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { Schema } = mongoose;
 const Chapter = new mongoose.Schema(
   {
     chapterName: { type: String, required: true, unique: true },
@@ -8,6 +9,8 @@ const Chapter = new mongoose.Schema(
     offeredInJobTitles: { type: String },
     reasons: [{ type: Object }],
     unitsOffer: [{ type: mongoose.Types.ObjectId, ref: "UnitData" }],
+    requested: [{ type: Schema.Types.ObjectId, ref: "UserData" }],
+    accepted: [{ type: Schema.Types.ObjectId, ref: "UserData" }]
   },
   {
     collection: "chapters",
