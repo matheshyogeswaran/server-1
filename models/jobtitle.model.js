@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 const Jobtitle = new mongoose.Schema(
   {
     jobTitlename: { type: String, required: true, unique: true },
-    depID: { type: String },
-    createdBy: { type: String, required: true },
-    createdOn: { type: String, default: Date.now },
+    depID: { type: mongoose.Types.ObjectId, ref: "DepartmentData" },
+    createdBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
+    createdOn: { type: Date, default: Date.now },
     chaptersAllocated: { type: String },
     reasons: [{ type: Object }],
   },
