@@ -13,8 +13,7 @@ chapterRoutes.route("/chapters").get(function (req, res) {
 });
 
 chapterRoutes.route("/chapters/showAllChapters").get(async (req, res) => {
-  const chapters = await Chapter.find({}).populate("depID")
-  // const users = await User.find({ userRole: userrole._id }).populate('userRole');
+  const chapters = await Chapter.find({}).populate("depID").populate("createdBy");
   res.json(chapters);
 });
 

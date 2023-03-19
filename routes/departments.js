@@ -37,12 +37,11 @@ departmentRoutes
 departmentRoutes.route("/departments/addDepartment").post(async (req, res) => {
   // console.log(req.body);
   const depName = req.body.departmentName;
-  const createdBy = "Name";
+  // const createdBy = "";
   const createdOn = Date.now();
   console.log(depName);
   const departmentDetails = new Department({
     depName,
-    createdBy,
     createdOn,
   });
   departmentDetails
@@ -60,6 +59,7 @@ departmentRoutes.route("/departments/addDepartment").post(async (req, res) => {
           status: false,
         });
       }
+      console.log(err)
       res.status(500).send({ error: err });
     });
 });
