@@ -13,7 +13,7 @@ chapterRoutes.route("/chapters").get(function (req, res) {
 });
 
 chapterRoutes.route("/chapters/showAllChapters").get(async (req, res) => {
-  const chapters = await Chapter.find({}).populate("depID")
+  const chapters = await Chapter.find({}).populate("depID").populate("createdBy");
   res.json(chapters);
 });
 
@@ -47,7 +47,7 @@ chapterRoutes.route("/chapters/addChapter").post(async (req, res) => {
   const depID = req.body.depID;
   const createdBy = req.body.userID;
   const createdOn = Date.now();
-  console.log(chaptername);
+
   const chapterDetails = new Chapter({
     chaptername,
     depID,
@@ -69,6 +69,7 @@ chapterRoutes.route("/chapters/addChapter").post(async (req, res) => {
           status: false,
         });
       }
+      console.log(err);
       res.status(500).send({ error: err });
     });
 });
