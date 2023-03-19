@@ -2,12 +2,13 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const Chapter = new mongoose.Schema(
   {
-    chaptername: { type: String, required: true, unique: true },
-    depID: { type: Schema.Types.ObjectId, ref: "DepartmentData" },
-    createdBy: { type: String, required: true },
-    createdOn: { type: String, default: Date.now },
+    chapterName: { type: String, required: true, unique: true },
+    depID: { type: mongoose.Types.ObjectId, ref: "DepartmentData" },
+    createdBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
+    createdOn: { type: Date, default: Date.now },
     offeredInJobTitles: { type: String },
     reasons: [{ type: Object }],
+    unitsOffer: [{ type: mongoose.Types.ObjectId, ref: "UnitData" }],
     requested: [{ type: Schema.Types.ObjectId, ref: "UserData" }],
     accepted: [{ type: Schema.Types.ObjectId, ref: "UserData" }]
   },

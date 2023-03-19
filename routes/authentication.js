@@ -39,22 +39,23 @@ authenticationRoutes.route("/authentication/login").post(async (req, res) => {
                         lastName: profile?.family_name,
                         picture: profile?.picture,
                         email: profile?.email,
-                        userID: userDocument._id,
                         userRole: userDocument.userRole,
                         token: jwt.sign({ userData:userDocument }, process.env.JWT_SECRET, {
                             expiresIn: "1h",
                         }),
                     },
+                    status:true
                 });
             } else {
                 res.status(200).json({
-                    message: "Login was successfull",
+                    message: "Please add your further details to continue !",
                     user: {
                         firstName: profile?.given_name,
                         lastName: profile?.family_name,
                         picture: profile?.picture,
                         email: profile?.email,
                     },
+                    status:false
                 });
             }
 
@@ -78,7 +79,14 @@ authenticationRoutes.route("/authentication/addFurtherDetails").post(async (req,
     const emailAddress = req.body.email;
     const department = req.body.department;
     const jobPosition = req.body.jobTitle;
-
+    // console.log(firstName)
+    // console.log(lastName)
+    // console.log(gender)
+    // console.log(dob)
+    // console.log(phoneNumber)
+    // console.log(emailAddress)
+    // console.log(department)
+    // console.log(jobPosition)
     const user = new User({ firstName, lastName, gender, dob, phoneNumber, emailAddress, department, jobPosition })
     user.save()
         .then(item => res.json({ message: "Further Details Added Successfully", status: "success" }))
@@ -86,6 +94,7 @@ authenticationRoutes.route("/authentication/addFurtherDetails").post(async (req,
             if (err.code === 11000) {
                 return res.json({ message: 'User already exists', status: "duplicate" });
             }
+            console.log(err);
             res.status(500).send({ error: 'Error saving data to the database' });
         });
 });
