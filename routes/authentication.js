@@ -7,6 +7,7 @@ require("dotenv").config();
 const User = require('../models/user.model');
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const client = new OAuth2Client(GOOGLE_CLIENT_ID);
+const UserRole = require("../models/userRole.model")
 
 async function verifyGoogleToken(token) {
     try {
@@ -30,7 +31,7 @@ authenticationRoutes.route("/authentication/login").post(async (req, res) => {
             }
             const profile = verificationResponse?.payload;
 
-            const userDocument = await User.findOne({ emailAddress: profile?.email });
+            const userDocument = await User.findOne({ emailAddress: profile?.email }).populate("userRoleId");
             if (userDocument) {
                 res.status(200).json({
                     message: "Login was successfull",
@@ -79,15 +80,10 @@ authenticationRoutes.route("/authentication/addFurtherDetails").post(async (req,
     const emailAddress = req.body.email;
     const department = req.body.department;
     const jobPosition = req.body.jobTitle;
-    // console.log(firstName)
-    // console.log(lastName)
-    // console.log(gender)
-    // console.log(dob)
-    // console.log(phoneNumber)
-    // console.log(emailAddress)
-    // console.log(department)
-    // console.log(jobPosition)
-    const user = new User({ firstName, lastName, gender, dob, phoneNumber, emailAddress, department, jobPosition })
+    const usrrole = await UserRole.findOne({ userRoleValue : "Hired Employee"});
+    const userRoleId = usrrole._id
+
+    const user = new User({ firstName, lastName, gender, dob, phoneNumber, emailAddress, department, jobPosition, userRoleId })
     user.save()
         .then(item => res.json({ message: "Further Details Added Successfully", status: "success" }))
         .catch(err => {

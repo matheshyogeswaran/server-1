@@ -30,6 +30,16 @@ userRoutes.route("/users/isUserAvailable").post(async (req, res) => {
     });
 });
 
+userRoutes.route("/users/isUserCollectionEmpty").get(async (req, res) => {
+    try {
+        const documents = await User.find().lean();
+        const isEmpty = documents.length === 0;
+        res.status(200).json({ "status": isEmpty });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
 
 
 
