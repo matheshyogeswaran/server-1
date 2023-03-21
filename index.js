@@ -27,13 +27,10 @@ app.use(require("./Routes/overviewReport"));
 app.use(require("./Routes/quizSubmissions"));
 app.use(require("./Routes/ktsessionRating"));
 app.use(require("./routes/articleRating"));
-<<<<<<< HEAD
 app.use(require("./routes/leaderboard"));
 app.use(require("./routes/submissionTable"));
 app.use(require("./routes/evaluateSubmission"));
-=======
 app.use(require("./routes/general"));
->>>>>>> ce13012ff50976e22c2df1f9e9aae939c599d6a8
 
 mongoose.set("strictQuery", false);
 // format
@@ -57,6 +54,7 @@ app.get("/", (req, res) => {
   });
 });
 
-app.listen(1337, () => {``
+app.listen(1337, () => {
+  ``;
   console.log("Node Server running on  port 1337");
 });
