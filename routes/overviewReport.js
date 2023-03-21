@@ -4,7 +4,7 @@ const overviewReport = express.Router();
 const quizSubmissions = require("../models/quizSubmission.model");
 const users = require("../models/user.model");
 
-overviewReport.post("/overviewReport/:empId", async (req, res) => {
+overviewReport.get("/overviewReport/:empId", async (req, res) => {
   let reqEmpId = req.params.empId;
   let quizSubArr = [];
   let quizSubmissionsData = await quizSubmissions.find();

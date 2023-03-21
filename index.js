@@ -29,6 +29,9 @@ app.use(require("./Routes/overviewReport"));
 app.use(require("./Routes/quizSubmissions"));
 app.use(require("./Routes/ktsessionRating"));
 app.use(require("./routes/articleRating"));
+app.use(require("./routes/leaderboard"));
+app.use(require("./routes/submissionTable"));
+app.use(require("./routes/evaluateSubmission"));
 app.use(require("./routes/general"));
 
 app.use((req,res,next)=>{
@@ -58,6 +61,7 @@ app.get("/", (req, res) => {
   });
 });
 
-app.listen(1337, () => {``
+app.listen(1337, () => {
+  ``;
   console.log("Node Server running on  port 1337");
 });

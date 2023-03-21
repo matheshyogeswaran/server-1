@@ -4,7 +4,7 @@ const KtSession = express.Router();
 const KtSessions = require("../models/ktSession.model");
 const Users = require("../models/user.model");
 
-KtSession.post("/ktsessionRatings/:empId", async (req, res) => {
+KtSession.get("/ktsessionRatings/:empId", async (req, res) => {
   let reqEmpId = req.params.empId;
   let [{ _id }] = await Users.find({ empId: reqEmpId }).select({ _id: 1 });
   let ktSessionRatings = await KtSessions.find({ createdBy: _id });
