@@ -13,9 +13,11 @@ app.use(express.urlencoded({ extended: true })); // if we want to test with post
 app.use(express.json());
 
 //route imports
-app.use(require("./routes/sample"));
 app.use(require("./routes/authentication"));
+
+
 app.use(require("./routes/users"));
+app.use(require("./routes/sample"));
 app.use(require("./routes/userroles"));
 app.use(require("./routes/departments"));
 app.use(require("./routes/jobtitles"));
@@ -31,6 +33,11 @@ app.use(require("./routes/leaderboard"));
 app.use(require("./routes/submissionTable"));
 app.use(require("./routes/evaluateSubmission"));
 app.use(require("./routes/general"));
+
+app.use((req,res,next)=>{
+  console.log("Server Accessed");
+  next();
+});
 
 mongoose.set("strictQuery", false);
 // format
