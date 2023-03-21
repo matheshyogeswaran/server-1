@@ -10,6 +10,7 @@ const FinalProjectAssignment = new mongoose.Schema(
     submittedDate: { type: Date, default: Date.now() },
     submittedFile: { type: String },
     status: { type: Boolean, default: false },
+    show: { type: Boolean, default: false },
   },
   {
     collection: "finalprojectassignments",

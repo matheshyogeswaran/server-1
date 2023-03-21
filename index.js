@@ -27,6 +27,9 @@ app.use(require("./Routes/overviewReport"));
 app.use(require("./Routes/quizSubmissions"));
 app.use(require("./Routes/ktsessionRating"));
 app.use(require("./routes/articleRating"));
+app.use(require("./routes/leaderboard"));
+app.use(require("./routes/submissionTable"));
+app.use(require("./routes/evaluateSubmission"));
 
 mongoose.set("strictQuery", false);
 // format
