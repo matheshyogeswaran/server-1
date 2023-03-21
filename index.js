@@ -27,15 +27,19 @@ app.use(require("./Routes/overviewReport"));
 app.use(require("./Routes/quizSubmissions"));
 app.use(require("./Routes/ktsessionRating"));
 app.use(require("./routes/articleRating"));
+<<<<<<< HEAD
 app.use(require("./routes/leaderboard"));
 app.use(require("./routes/submissionTable"));
 app.use(require("./routes/evaluateSubmission"));
+=======
+app.use(require("./routes/general"));
+>>>>>>> ce13012ff50976e22c2df1f9e9aae939c599d6a8
 
 mongoose.set("strictQuery", false);
 // format
 // mongodb+srv://<username>:<password>@cluster0.mongodb.net/<database>?retryWrites=true&w=majority
-// const connUrl = "mongodb://127.0.0.1:27017/nets";
-const connUrl = "mongodb://localhost:27017/NETS";
+const connUrl = "mongodb://127.0.0.1:27017/nets";
+// const connUrl = "mongodb://localhost:27017/NETS";
 // const connUrl = "mongodb+srv://admin:o2rRfSYGKkUCHG8s@cluster0.eh378xa.mongodb.net/netsTest?retryWrites=true&w=majority";
 mongoose
   .connect(connUrl, {
@@ -53,6 +57,6 @@ app.get("/", (req, res) => {
   });
 });
 
-app.listen(1337, () => {
+app.listen(1337, () => {``
   console.log("Node Server running on  port 1337");
 });

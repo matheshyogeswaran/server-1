@@ -46,13 +46,12 @@ jobtitleRoutes.route("/jobtitles/addJobtitle").post(async (req, res) => {
   // console.log(req.body);
   const jobTitlename = req.body.jobtitleName;
   const depID = req.body.depID;
-  const createdBy = "Name";
+  //const createdBy = "Name";
   const createdOn = Date.now();
   // console.log("helooooooooooooooooooooooooooooooooo" + depName);
   const jobtitleDetails = new Jobtitle({
     jobTitlename,
     depID,
-    createdBy,
     createdOn,
   });
   jobtitleDetails

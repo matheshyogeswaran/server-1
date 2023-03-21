@@ -6,6 +6,7 @@ const Jobtitle = new mongoose.Schema(
     createdBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
     createdOn: { type: Date, default: Date.now },
     chaptersAllocated: { type: String },
+    // chaptersAllocated: { type: Schema.Types.ObjectId, ref: "ChapterData" },
     reasons: [{ type: Object }],
   },
   {

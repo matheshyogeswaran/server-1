@@ -13,25 +13,33 @@ userRoutes.route("/users/showAllUsers").get(function (req, res) {
     });
 });
 
-userRoutes.route("/users/isUserAvailable").post(function (req, res) {
+userRoutes.route("/users/isUserAvailable").post(async (req, res) => {
     const email = req.body.email;
-    User.findOne({emailAddress:email}, (err, users) => {
+    // const count = await User.estimatedDocumentCount({});
+    User.findOne({ emailAddress: email }, (err, users) => {
         if (err) {
-                // console.log(err)
-                res.send(err);
+            res.send(err);
         } else {
             if (users) {
-                res.json({status:true});
-                // console.log(true)
+                res.json({ status: true });
             } else {
-                res.json({status:false});
-                // console.log(false)
+                res.json({ status: false });
 
             }
         }
     });
 });
 
+userRoutes.route("/users/isUserCollectionEmpty").get(async (req, res) => {
+    try {
+        const documents = await User.find().lean();
+        const isEmpty = documents.length === 0;
+        res.status(200).json({ "status": isEmpty });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
 
 
 

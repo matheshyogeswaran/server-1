@@ -2,9 +2,17 @@ const express = require("express");
 const departmentRoutes = express.Router();
 const Department = require("../models/department.model");
 
-departmentRoutes
-  .route("/departments/showAllDepartments")
-  .get(function (req, res) {
+departmentRoutes.route("/departments").get(function (req, res) {
+  res.json([
+    {
+      url: "http://localhost:1337/departments/showAllDepartments",
+      method: "get",
+      desc: "Shows all department's data from database",
+    },
+  ]);
+});
+
+departmentRoutes.route("/departments/showAllDepartments").get(function (req, res) {
     Department.find({}, (err, departments) => {
       if (err) {
         res.send(err);
@@ -37,12 +45,11 @@ departmentRoutes
 departmentRoutes.route("/departments/addDepartment").post(async (req, res) => {
   // console.log(req.body);
   const depName = req.body.departmentName;
-  const createdBy = "Name";
+  // const createdBy = "";
   const createdOn = Date.now();
   console.log(depName);
   const departmentDetails = new Department({
     depName,
-    createdBy,
     createdOn,
   });
   departmentDetails
@@ -60,6 +67,7 @@ departmentRoutes.route("/departments/addDepartment").post(async (req, res) => {
           status: false,
         });
       }
+      console.log(err)
       res.status(500).send({ error: err });
     });
 });

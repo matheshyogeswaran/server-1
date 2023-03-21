@@ -9,5 +9,5 @@ const UserRole = new mongoose.Schema(
     collection: "userroles",
   }
 );
-const model = mongoose.model("userRole", UserRole);
+const model = mongoose.model("UserRoleData", UserRole);
 module.exports = model;
