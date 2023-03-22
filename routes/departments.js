@@ -12,9 +12,7 @@ departmentRoutes.route("/departments").get(function (req, res) {
   ]);
 });
 
-departmentRoutes
-  .route("/departments/showAllDepartments")
-  .get(function (req, res) {
+departmentRoutes.route("/departments/showAllDepartments").get(function (req, res) {
     Department.find({}, (err, departments) => {
       if (err) {
         res.send(err);
