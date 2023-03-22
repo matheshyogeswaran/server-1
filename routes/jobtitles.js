@@ -60,7 +60,10 @@ jobtitleRoutes.route("/jobtitles/addJobtitle").post(async (req, res) => {
         if (err) {
           console.log(err);
         } else {
-          console.log('Successfully updated jobTitlename!');
+          res.json({
+            message: "Jobtitle Added Successfully",
+            status: true,
+          })
         }
       });
     }
