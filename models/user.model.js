@@ -8,16 +8,15 @@ const User = new mongoose.Schema(
     gender: { type: String, required: true },
     dob: { type: Date, required: true },
     phoneNumber: { type: Number, required: true },
-    SubmittedOn: { type: String, default: Date.now },
+    SubmittedOn: { type: String, default: Date.now },//Date
     emailAddress: { type: String, required: true, unique: true },
     verified: { type: String, default: "false" },
     userStatus: { type: String, default: "active" },
-    department: { type: mongoose.Schema.Types.ObjectId, ref: "DepartmentData" },
-    jobPosition: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "DepartmentData",
-    },
-    badges: [{ badgeValue: { type: String }, earnedOn: { type: Date } }],
+    department: { type: mongoose.Schema.Types.ObjectId, ref: "DepartmentData", },
+    jobPosition: { type: mongoose.Schema.Types.ObjectId, ref: "DepartmentData", },
+    // jobPosition: { type: mongoose.Schema.Types.ObjectId, ref: "JobtitleData", },//DepartmentData
+    badges: [{ badgeValue: { type: String }, earnedOn: { type: Date }, },],
+    earnedScoresByQuiz: { numOfQuizzesDone: { type: Number }, totalScoresEarned: { type: Number }, },
   },
   {
     collection: "users",

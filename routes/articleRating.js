@@ -50,12 +50,12 @@ Article.get("/articleRatings/:empId", async (req, res) => {
       data === 1
         ? count1++
         : data === 2
-        ? count2++
-        : data === 3
-        ? count3++
-        : data === 4
-        ? count4++
-        : count5++
+          ? count2++
+          : data === 3
+            ? count3++
+            : data === 4
+              ? count4++
+              : count5++
     );
     let totalCount = count1 + count2 + count3 + count4 + count5;
     overAllRatingData = [
