@@ -80,7 +80,7 @@ authenticationRoutes.route("/authentication/addFurtherDetails").post(async (req,
   const department = req.body.department;
   const jobPosition = req.body.jobTitle;
   const usrrole = await UserRole.findOne({ userRoleValue: "Hired Employee" });
-  const userRoleId = usrrole._id
+  const userRoleId = usrrole?._id
 
   const user = new User({ firstName, lastName, gender, dob, phoneNumber, emailAddress, department, jobPosition, userRoleId })
   user.save()
