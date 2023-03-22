@@ -4,7 +4,7 @@ const Article = express.Router();
 const Articles = require("../models/article.model");
 const Users = require("../models/user.model");
 
-Article.post("/articleRatings/:empId", async (req, res) => {
+Article.get("/articleRatings/:empId", async (req, res) => {
   let reqEmpId = req.params.empId;
 
   let [{ _id }] = await Users.find({ empId: reqEmpId }).select({ _id: 1 });
@@ -38,7 +38,6 @@ Article.post("/articleRatings/:empId", async (req, res) => {
     overAllClarity += ratings.overallClarity;
     overAllKnowledgeAndSkill += ratings.overallKnowledgeAndSkill;
   }
-  console.log(typeof overAllRating);
 
   //progressbar data calculation
   const individualRates = (overAllRatingData) => {
