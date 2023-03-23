@@ -81,8 +81,9 @@ authenticationRoutes.route("/authentication/addFurtherDetails").post(async (req,
   const jobPosition = req.body.jobTitle;
   const usrrole = await UserRole.findOne({ userRoleValue: "Hired Employee" });
   const userRoleId = usrrole?._id
+  const userImage = req.body.userImage;
 
-  const user = new User({ firstName, lastName, gender, dob, phoneNumber, emailAddress, department, jobPosition, userRoleId })
+  const user = new User({ firstName, lastName, gender, dob, phoneNumber, emailAddress, department, jobPosition, userRoleId, userImage })
   user.save()
     .then(item => res.json({ message: "Further Details Added Successfully", status: "success" }))
     .catch(err => {

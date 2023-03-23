@@ -10,8 +10,9 @@ const User = new mongoose.Schema(
     phoneNumber: { type: Number, required: true },
     SubmittedOn: { type: String, default: Date.now },//Date
     emailAddress: { type: String, required: true, unique: true },
-    verified: { type: String, default: "false" },
+    verified: { type: Boolean, default: false },
     userStatus: { type: String, default: "active" },
+    userImage: { type: String },
     department: { type: mongoose.Schema.Types.ObjectId, ref: "DepartmentData", },
     jobPosition: { type: mongoose.Schema.Types.ObjectId, ref: "DepartmentData", },
     // jobPosition: { type: mongoose.Schema.Types.ObjectId, ref: "JobtitleData", },//DepartmentData
