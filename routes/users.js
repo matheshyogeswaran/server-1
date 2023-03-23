@@ -2,15 +2,18 @@ const express = require("express");
 const userRoutes = express.Router();
 const User = require("../models/user.model");
 const UserRole = require("../models/userRole.model");
+userRoutes.use(require("../middleware/checkPermission"));
 
 userRoutes.route("/users/showAllUsers").get(function(req, res) {
-  User.find({}, (err, users) => {
-    if (err) {
-      res.send(err);
-    } else {
-      res.json(users);
-    }
-  });
+  User.find({})
+    .populate({ path: "department", select: "depName createdBy" })
+    .exec((err, users) => {
+      if (err) {
+        res.send(err);
+      } else {
+        res.json(users);
+      }
+    });
 });
 
 userRoutes.route("/users/isUserAvailable").post(async (req, res) => {
