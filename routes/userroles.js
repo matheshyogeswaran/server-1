@@ -3,7 +3,7 @@ const userRoleRoute = express.Router();
 const UserRole = require("../models/userRole.model");
 const User = require("../models/user.model");
 
-userRoleRoute.route("/userRoles/showAllUserRoles").get(function(req, res) {
+userRoleRoute.route("/userRoles/showAllUserRoles").get(function (req, res) {
   UserRole.find({}, {}, (err, userRoles) => {
     if (err) {
       res.send(err);
@@ -14,35 +14,35 @@ userRoleRoute.route("/userRoles/showAllUserRoles").get(function(req, res) {
 });
 
 userRoleRoute.route("/userRoles/changeUserRole").post(function (req, res) {
-    try {
-        const userid = req.body.userID;
-        const userRoleId = req.body.newRoleID;
-        console.log(userid)
-        console.log(userRoleId)
-        User.updateOne(
-            { _id: userid },
-            { $set: { userRoleId: userRoleId } }
-        )
-            .then((result) => {
-                console.log(result)
-                return res.json({
-                    message: "User Role Changed Successfully",
-                    status: true,
-                });
-            })
-            .catch((err) => {
-                console.log(err);
-                return res.json({
-                    message: "Error in Changing the User Role",
-                    status: false,
-                });
-            });
-    } catch {
+  try {
+    const userid = req.body.userID;
+    const userRoleId = req.body.newRoleID;
+    console.log(userid)
+    console.log(userRoleId)
+    User.updateOne(
+      { _id: userid },
+      { $set: { userRoleId: userRoleId } }
+    )
+      .then((result) => {
+        console.log(result)
         return res.json({
-            message: "User Not Found. Try Again !!!",
-            status: false,
+          message: "User Role Changed Successfully",
+          status: true,
         });
-    }
+      })
+      .catch((err) => {
+        console.log(err);
+        return res.json({
+          message: "Error in Changing the User Role",
+          status: false,
+        });
+      });
+  } catch {
+    return res.json({
+      message: "User Not Found. Try Again !!!",
+      status: false,
+    });
+  }
 
 });
 
@@ -59,54 +59,29 @@ userRoleRoute.route("/userRoles/isUserRoleEmpty").get(async (req, res) => {
 });
 
 userRoleRoute.route("/userRoles/initRoles/:id").get(async (req, res) => {
-    const userID = req.params.id;
-    const basicPermissions = [
-        {
-            userRoleValue: "Hired Employee",
-            userRolePermissions: ["P001", "P002", "P003", "P009", "P010", "P011"]
-        },
-        {
-            userRoleValue: "Content Creator",
-            userRolePermissions: ["P001", "P009", "P010", "P013", "P018"]
-        },
-        {
-            userRoleValue: "Supervisor",
-            userRolePermissions: ["P001", "P004", "P008", "P009", "P010", "P012", "P014", "P015", "P016", "P017"]
-        },
-        {
-            userRoleValue: "System Admin",
-            userRolePermissions: ["P001", "P004", "P005", "P006", "P009", "P010", "P019","P025"]
-        },
-        {
-            userRoleValue: "Super Admin",
-            userRolePermissions: ["P001", "P002", "P003", "P004", "P005", "P006", "P007", "P009", "P010", "P020", "P021", "P022", "P023", "P024"]
-        },
-    ];
-
-    try {
-        const documents = await UserRole.find().lean();
-        const isEmpty = documents.length === 0;
-        if (isEmpty) {
-            //insert basic user role permissions if no value in userroles collection
-            const result = await UserRole.insertMany(basicPermissions);
-            const superAdminDoc = result[4];
-            User.updateOne(
-                { _id: userID },
-                { $set: { userRoleId: superAdminDoc._id, verified:true } }
-            ).then((result) => {
-                return res.json({ "message": "Basic User Roles initialized successfully. You will be LoggedOut. Please Login Again.", "status": true, "data": result });
-            }).catch((err) => {
-                return res.json({
-                    message: "Error in Updating User's Role",
-                    status: false,
-                });
-            });
-        } else {
-            return res.json({ "message": "User Roles already available", "status": false });
-        }
-    } catch (error) {
-        console.error(error);
-        return res.json({ "message": "Server Error", "status": false });
+  const userID = req.params.id;
+  const basicPermissions = [
+    {
+      userRoleValue: "Hired Employee",
+      userRolePermissions: ["P001", "P002", "P003", "P009", "P010", "P011"]
+    },
+    {
+      userRoleValue: "Content Creator",
+      userRolePermissions: ["P001", "P009", "P010", "P013", "P018"]
+    },
+    {
+      userRoleValue: "Supervisor",
+      userRolePermissions: ["P001", "P004", "P008", "P009", "P010", "P012", "P014", "P015", "P016", "P017"]
+    },
+    {
+      userRoleValue: "System Admin",
+      userRolePermissions: ["P001", "P004", "P005", "P006", "P009", "P010", "P019", "P025"]
+    },
+    {
+      userRoleValue: "Super Admin",
+      userRolePermissions: ["P001", "P002", "P003", "P004", "P005", "P006", "P007", "P009", "P010", "P020", "P021", "P022", "P023", "P024"]
+    },
+  ];
 
   try {
     const documents = await UserRole.find().lean();
@@ -117,35 +92,25 @@ userRoleRoute.route("/userRoles/initRoles/:id").get(async (req, res) => {
       const superAdminDoc = result[4];
       User.updateOne(
         { _id: userID },
-        { $set: { userRoleId: superAdminDoc._id } }
-      )
-        .then((result) => {
-          return res.json({
-            message:
-              "Basic User Roles initialized successfully. You will be LoggedOut. Please Login Again.",
-            status: true,
-            data: result,
-          });
-        })
-        .catch((err) => {
-          return res.json({
-            message: "Error in Updating User's Role",
-            status: false,
-          });
+        { $set: { userRoleId: superAdminDoc._id, verified: true } }
+      ).then((result) => {
+        return res.json({ "message": "Basic User Roles initialized successfully. You will be LoggedOut. Please Login Again.", "status": true, "data": result });
+      }).catch((err) => {
+        return res.json({
+          message: "Error in Updating User's Role",
+          status: false,
         });
-    } else {
-      return res.json({
-        message: "User Roles already available",
-        status: false,
       });
+    } else {
+      return res.json({ "message": "User Roles already available", "status": false });
     }
   } catch (error) {
     console.error(error);
-    return res.json({ message: "Server Error", status: false });
+    return res.json({ "message": "Server Error", "status": false });
   }
 });
 
-userRoleRoute.route("/userRoles/findOneUserRole/:id").get(function(req, res) {
+userRoleRoute.route("/userRoles/findOneUserRole/:id").get(function (req, res) {
   const userRoleID = req.params.id;
   UserRole.findOne({ _id: userRoleID }, (err, userRole) => {
     if (err) {
