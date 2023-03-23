@@ -16,7 +16,6 @@ app.use(express.static("public")); // store files in server
 //route imports
 app.use(require("./routes/authentication"));
 
-
 app.use(require("./routes/users"));
 app.use(require("./routes/sample"));
 app.use(require("./routes/userroles"));
@@ -36,8 +35,9 @@ app.use(require("./routes/evaluateSubmission"));
 app.use(require("./routes/general"));
 app.use(require("./routes/report"));
 app.use(require("./routes/downloadSubmission"));
+app.use(require("./routes/scoreEditLog"));
 
-app.use((req,res,next)=>{
+app.use((req, res, next) => {
   console.log("Server Accessed");
   next();
 });
