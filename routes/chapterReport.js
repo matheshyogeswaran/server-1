@@ -1,11 +1,12 @@
 const express = require("express");
-const overviewReport = express.Router();
+const chapterReport = express.Router();
 
 const quizSubmissions = require("../models/quizSubmission.model");
 const users = require("../models/user.model");
 const Chapters = require("../models/chapter.model");
+const Units = require("../models/unit.model");
 
-overviewReport.get("/overviewReport/:empId", async (req, res) => {
+chapterReport.get("/chapterReport/:empId", async (req, res) => {
   let reqEmpId = req.params.empId;
   let quizSubArr = [];
   let quizSubmissionsData = await quizSubmissions.find();
@@ -19,32 +20,31 @@ overviewReport.get("/overviewReport/:empId", async (req, res) => {
       quizSubArr.push(quizObj);
     }
   }
-  let score = 0;
-  let unitCount = 0;
-  let overviewResult = [];
+  let unit = [];
+  let chapterResults = [];
+  let chapterUnit = {};
   let chapters = await Chapters.find();
   for (let chap of chapters) {
-    score = 0;
-    unitCount = 0;
+    unit = [];
     for (let quizSub of quizSubArr) {
-      if (quizSub.chapterId.toString() === chap._id.toString()) {
-        console.log(score);
-        score += quizSub.score;
-      }
       if (chap._id.toString() === quizSub.chapterId.toString()) {
-        unitCount++;
+        let units = await Units.find({ _id: quizSub.unitId });
+        for (let unit of units) {
+          if (quizSub.unitId.toString() === unit._id.toString()) {
+            chapterUnit = {
+              unitName: unit.unitName,
+              score: quizSub.score,
+            };
+          }
+        }
+        unit.push(chapterUnit);
       }
     }
-    let result = {
-      score,
-      unitCount,
-      chapterName: chap.chapterName,
-      average: score / unitCount,
-    };
-    overviewResult.push(result);
+    if (unit.length > 0)
+      chapterResults.push({ chapterName: chap.chapterName, units: unit });
   }
 
-  res.json(overviewResult);
+  res.json(chapterResults);
 });
 
-module.exports = overviewReport;
+module.exports = chapterReport;

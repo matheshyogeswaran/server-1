@@ -11,6 +11,7 @@ const FinalProjectAssignment = new mongoose.Schema(
     submittedFile: { type: String },
     status: { type: Boolean, default: false },
     show: { type: Boolean, default: false },
+    acceptedBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
   },
   {
     collection: "finalprojectassignments",
