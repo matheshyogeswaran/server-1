@@ -6,12 +6,40 @@ userRoutes.use(require("../middleware/checkPermission"))
 
 userRoutes.route("/users/showAllUsers").get(function (req, res) {
     User.find({})
-        .populate({path:"department", select:"depName createdBy"})
+        .populate({path:"department", select:"depName createdBy"}).populate({path:"userRoleId", select:"userRoleValue"})
         .exec((err, users) => {
             if (err) {
                 res.send(err);
             } else {
                 res.json(users);
+            }
+        });
+});
+
+// userRoutes.route("/users/getAllUnverifisedUsers").get(function (req, res) {
+//     User.find({},{verified:false})
+//         .populate({path:"department", select:"depName createdBy"}).populate({path:"userRoleId", select:"userRoleValue"})
+//         .exec((err, users) => {
+//             if (err) {
+//                 res.send(err);
+//             } else {
+//                 res.json(users);
+//             }
+//         });
+// });
+
+userRoutes.route("/users/getAllUnverifiedUsers").get(function (req, res) {
+    User.find({verified:false,"userRoleId.userRoleValue":"Hired Employee"})
+        .populate({path:"department", select:"depName createdBy Jobtitle"})
+        .exec((err, users) => {
+            if (err) {
+                res.send(err);
+            } else {
+                const mappedUsers = users.map(user => ({
+                    ...user.toObject(),
+                    jobPosition: user.department.Jobtitle.find(jobTitle => jobTitle._id.equals(user.jobPosition))
+                }));
+                res.json(mappedUsers);
             }
         });
 });

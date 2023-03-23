@@ -13,6 +13,40 @@ userRoleRoute.route("/userRoles/showAllUserRoles").get(function (req, res) {
     });
 });
 
+userRoleRoute.route("/userRoles/changeUserRole").post(function (req, res) {
+    try {
+        const userid = req.body.userID;
+        const userRoleId = req.body.newRoleID;
+        console.log(userid)
+        console.log(userRoleId)
+        User.updateOne(
+            { _id: userid },
+            { $set: { userRoleId: userRoleId } }
+        )
+            .then((result) => {
+                console.log(result)
+                return res.json({
+                    message: "User Role Changed Successfully",
+                    status: true,
+                });
+            })
+            .catch((err) => {
+                console.log(err);
+                return res.json({
+                    message: "Error in Changing the User Role",
+                    status: false,
+                });
+            });
+    } catch {
+        return res.json({
+            message: "User Not Found. Try Again !!!",
+            status: false,
+        });
+    }
+
+});
+
+
 userRoleRoute.route("/userRoles/isUserRoleEmpty").get(async (req, res) => {
     try {
         const documents = await UserRole.find().lean();
@@ -42,7 +76,7 @@ userRoleRoute.route("/userRoles/initRoles/:id").get(async (req, res) => {
         },
         {
             userRoleValue: "System Admin",
-            userRolePermissions: ["P001", "P004", "P005", "P006", "P009", "P010", "P019"]
+            userRolePermissions: ["P001", "P004", "P005", "P006", "P009", "P010", "P019","P025"]
         },
         {
             userRoleValue: "Super Admin",
@@ -59,7 +93,7 @@ userRoleRoute.route("/userRoles/initRoles/:id").get(async (req, res) => {
             const superAdminDoc = result[4];
             User.updateOne(
                 { _id: userID },
-                { $set: { userRoleId: superAdminDoc._id } }
+                { $set: { userRoleId: superAdminDoc._id, verified:true } }
             ).then((result) => {
                 return res.json({ "message": "Basic User Roles initialized successfully. You will be LoggedOut. Please Login Again.", "status": true, "data": result });
             }).catch((err) => {
