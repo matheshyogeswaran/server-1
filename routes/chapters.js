@@ -48,7 +48,7 @@ chapterRoutes.route("/chapters/isChapterAvailable").post(function (req, res) {  
 //----------------------------------------------------------------------------------------
 
 chapterRoutes.route("/chapters/addChapter").post(async (req, res) => {
-  // console.log(req.body);
+
   const chapterName = req.body.chapterName;
   const depID = req.body.depID;
   const createdBy = req.body.userID;
