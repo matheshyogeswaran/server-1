@@ -37,6 +37,10 @@ app.use(require("./routes/general"));
 app.use(require("./routes/report"));
 app.use(require("./routes/downloadSubmission"));
 
+app.use('/units', require("./routes/units"));
+app.use('/kts', require("./routes/ktsessions"));
+app.use('/arts', require("./routes/articles"));
+
 app.use((req,res,next)=>{
   console.log("Server Accessed");
   next();
