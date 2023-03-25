@@ -8,12 +8,15 @@ const KtSession = new mongoose.Schema(
       ref: "ChapterData",
     },
     sessionName: { type: String },
+    sessionDesc: { type: String },
+    createdBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
+    createdOn: { type: Date, default: Date.now },
     overallRating: { type: Number },
     overallQuality: { type: Number },
     overallComm: { type: Number },
     overallClarity: { type: Number },
     overallKnowledgeAndSkill: { type: Number },
-    createdBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
+     
   },
   {
     collection: "ktsessions",
