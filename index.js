@@ -16,7 +16,6 @@ app.use(express.static("public")); // store files in server
 //route imports
 app.use(require("./routes/authentication"));
 
-
 app.use(require("./routes/users"));
 app.use(require("./routes/sample"));
 app.use(require("./routes/userroles"));
@@ -34,14 +33,18 @@ app.use(require("./routes/leaderboard"));
 app.use(require("./routes/submissionTable"));
 app.use(require("./routes/evaluateSubmission"));
 app.use(require("./routes/general"));
+app.use(require("./routes/guidanceTicket"));
+app.use(require("./routes/discussionForum"));
+app.use(require("./routes/ktSessionComment"));
+app.use(require("./routes/articlelComment"));
 app.use(require("./routes/report"));
 app.use(require("./routes/downloadSubmission"));
 
-app.use('/units', require("./routes/units"));
-app.use('/kts', require("./routes/ktsessions"));
-app.use('/arts', require("./routes/articles"));
+app.use("/units", require("./routes/units"));
+app.use("/kts", require("./routes/ktsessions"));
+app.use("/arts", require("./routes/articles"));
 
-app.use((req,res,next)=>{
+app.use((req, res, next) => {
   console.log("Server Accessed");
   next();
 });
@@ -50,8 +53,10 @@ mongoose.set("strictQuery", false);
 // format
 // mongodb+srv://<username>:<password>@cluster0.mongodb.net/<database>?retryWrites=true&w=majority
 // const connUrl = "mongodb://127.0.0.1:27017/nets";
-const connUrl = "mongodb://localhost:27017/NETS";
-// const connUrl = "mongodb+srv://admin:o2rRfSYGKkUCHG8s@cluster0.eh378xa.mongodb.net/netsTest?retryWrites=true&w=majority";
+// const connUrl = "mongodb://localhost:27017/NETS";
+const connUrl =
+  "mongodb+srv://admin:o2rRfSYGKkUCHG8s@cluster0.eh378xa.mongodb.net/netsTest?retryWrites=true&w=majority";
+
 mongoose
   .connect(connUrl, {
     useUnifiedTopology: true,
