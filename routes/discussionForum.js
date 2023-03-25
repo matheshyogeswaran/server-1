@@ -4,26 +4,32 @@ const Forum = require("../models/discussionForum.model");
 
 forumRoutes.route("/get-forums-by-chapter/:chptId").get(function (req, res) {
   const { chptId } = req.params;
-  Forum.find({ belongsToChapter: chptId }, (err, tickets) => {
-    if (err) {
-      res.status(500).send(err);
-    } else {
-      res.status(200).json(tickets);
-    }
-  });
+  Forum.find({ belongsToChapter: chptId })
+    .populate("createdBy")
+    .exec((err, forums) => {
+      if (err) {
+        res.status(500).send(err);
+      } else {
+        res.status(200).json(forums);
+      }
+    });
 });
 
 forumRoutes
   .route("/get-forum-details-by-forum-id/:id")
   .get(function (req, res) {
     const { id } = req.params;
-    Forum.findById(id, (err, tickets) => {
-      if (err) {
-        res.status(500).send(err);
-      } else {
-        res.status(200).json(tickets);
-      }
-    });
+    Forum.findById(id)
+      .populate("createdBy")
+      .populate("posts.createdBy")
+      .populate("posts.replies.createdBy")
+      .exec((err, tickets) => {
+        if (err) {
+          res.status(500).send(err);
+        } else {
+          res.status(200).send([tickets]);
+        }
+      });
   });
 
 forumRoutes.route("/edit-forum/:id").put(function (req, res) {
