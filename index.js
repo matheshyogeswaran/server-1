@@ -39,6 +39,8 @@ app.use(require("./routes/ktSessionComment"));
 app.use(require("./routes/articlelComment"));
 app.use(require("./routes/report"));
 app.use(require("./routes/downloadSubmission"));
+app.use(require("./routes/scoreEditLog"));
+
 
 app.use("/units", require("./routes/units"));
 app.use("/kts", require("./routes/ktsessions"));
