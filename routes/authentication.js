@@ -31,7 +31,7 @@ authenticationRoutes.route("/authentication/login").post(async (req, res) => {
       }
       const profile = verificationResponse?.payload;
 
-      const userDocument = await User.findOne({ emailAddress: profile?.email }).populate("userRoleId");
+      const userDocument = await User.findOne({ emailAddress: profile?.email });
       if (userDocument) {
         res.status(200).json({
           message: "Login was successfull",
@@ -59,7 +59,6 @@ authenticationRoutes.route("/authentication/login").post(async (req, res) => {
           status: false
         });
       }
-
     }
   } catch (error) {
     res.status(500).json({
@@ -70,7 +69,6 @@ authenticationRoutes.route("/authentication/login").post(async (req, res) => {
 
 
 authenticationRoutes.route("/authentication/addFurtherDetails").post(async (req, res) => {
-  // console.log(req.body);
   const firstName = req.body.firstName;
   const lastName = req.body.lastName;
   const gender = req.body.gender;
@@ -79,11 +77,23 @@ authenticationRoutes.route("/authentication/addFurtherDetails").post(async (req,
   const emailAddress = req.body.email;
   const department = req.body.department;
   const jobPosition = req.body.jobTitle;
-  const usrrole = await UserRole.findOne({ userRoleValue: "Hired Employee" });
-  const userRoleId = usrrole?._id
   const userImage = req.body.userImage;
+  const empId = req.body.employeeID;
+  let verified = false;
+  const usrCount = await User.find().lean();
+  let userRole = "";
+  if (usrCount.length === 0) {
+    userRole = "Super Admin"
+    verified = true;
+  } else {
+    userRole = "Hired Employee"
+  }
 
-  const user = new User({ firstName, lastName, gender, dob, phoneNumber, emailAddress, department, jobPosition, userRoleId, userImage })
+  const user = new User({
+    firstName, lastName, gender, dob, phoneNumber,empId,
+    emailAddress, department, jobPosition, userRole, userImage, verified
+  })
+
   user.save()
     .then(item => res.json({ message: "Further Details Added Successfully", status: "success" }))
     .catch(err => {
@@ -91,6 +101,7 @@ authenticationRoutes.route("/authentication/addFurtherDetails").post(async (req,
         return res.json({ message: 'User already exists', status: "duplicate" });
       }
       console.log(err);
+      console.log(err)
       res.status(500).send({ error: 'Error saving data to the database' });
     });
 });
