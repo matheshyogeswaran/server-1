@@ -53,7 +53,7 @@ app.use((req, res, next) => {
 
 mongoose.set("strictQuery", false);
 // format
-const connUrl = "mongodb://127.0.0.1:27017/NETS";
+const connUrl = process.env.MONGO_LOCAL_URI;
 mongoose
   .connect(connUrl, {
     useUnifiedTopology: true,

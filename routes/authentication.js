@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const jwt_decode = require("jwt-decode");
 require("dotenv").config();
 const User = require("../models/user.model");
-const GOOGLE_CLIENT_ID = "707797281139-4aqd3htq7bnut6nsp76ufc448svl64r9.apps.googleusercontent.com";
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 const UserRole = require("../models/userRole.model")
 
@@ -41,8 +41,8 @@ authenticationRoutes.route("/authentication/login").post(async (req, res) => {
             picture: profile?.picture,
             email: profile?.email,
             userRole: userDocument.userRole,
-            token: jwt.sign({ userData: userDocument }, "This is my new secret", {
-              expiresIn: "1h",
+            token: jwt.sign({ userData: userDocument }, process.env.JWT_SECRET, {
+              expiresIn: process.env.JWT_EXP,
             }),
           },
           status: true
@@ -108,18 +108,18 @@ authenticationRoutes.route("/authentication/addFurtherDetails").post(async (req,
 
 authenticationRoutes.route("/authentication/verifyToken").post(async (req, res) => {
   const token = req.body.token;
-  jwt.verify(token, "This is my new secret", function (err, decoded) {
+  jwt.verify(token, process.env.JWT_SECRET, function (err, decoded) {
     if (err) {
       return res.json({
         message: "Token is Invalid or Expired",
         status: false,
-        expTime: "1h",
+        expTime: process.env.JWT_EXP,
       });
     } else {
       return res.json({
         message: decoded,
         status: true,
-        expTime: "1h",
+        expTime: process.env.JWT_EXP,
       });
     }
   });
