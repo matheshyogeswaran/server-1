@@ -10,10 +10,13 @@ const Department = new mongoose.Schema(
         jobTitlename: { type: String },
         createdBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
         createdOn: { type: Date, default: Date.now },
-        chaptersAllocated: [{ type: Schema.Types.ObjectId, ref: "ChapterData" }],
+        chaptersAllocated: [
+          { type: Schema.Types.ObjectId, ref: "ChapterData" },
+        ],
         // chaptersAllocated: { type: String },
         reasons: [{ type: Object }],
-      },],
+      },
+    ],
     // jobTitles: [{ jobTitle: { type: String } }],
     reasons: [{ type: Object }],
   },
@@ -24,7 +27,6 @@ const Department = new mongoose.Schema(
 
 const model = mongoose.model("DepartmentData", Department);
 module.exports = model;
-
 
 // const mongoose = require("mongoose");
 // const Department = new mongoose.Schema(
