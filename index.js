@@ -53,12 +53,7 @@ app.use((req, res, next) => {
 
 mongoose.set("strictQuery", false);
 // format
-// mongodb+srv://<username>:<password>@cluster0.mongodb.net/<database>?retryWrites=true&w=majority
-// const connUrl = "mongodb://127.0.0.1:27017/nets";
-// const connUrl = "mongodb://localhost:27017/NETS";
-const connUrl =
-  "mongodb+srv://admin:o2rRfSYGKkUCHG8s@cluster0.eh378xa.mongodb.net/netsTest?retryWrites=true&w=majority";
-
+const connUrl = "mongodb://127.0.0.1:27017/NETS";
 mongoose
   .connect(connUrl, {
     useUnifiedTopology: true,
