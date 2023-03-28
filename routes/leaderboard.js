@@ -27,24 +27,27 @@ leaderBoard.get("/getLeaderboardData", async (req, res) => {
   }
   leaderboardData.sort((a, b) => b.totalScore - a.totalScore);
 
-  let hiredEmployee = leaderboardData[0].empId;
-
-  for (let user of users) {
-    if (user.empId === hiredEmployee) {
-      hiredEmployee = user.userRoleId;
-    }
-  }
   let finalLeaderboardData = [];
-  for (let lbdata of leaderboardData) {
+
+  if (leaderboardData[0].totalScore > 0) {
+    let hiredEmployee = leaderboardData[0].empId;
+
     for (let user of users) {
-      if (lbdata.empId === user.empId) {
-        if (user.userRoleId.toString() === hiredEmployee.toString()) {
-          finalLeaderboardData.push(lbdata);
+      if (user.empId === hiredEmployee) {
+        hiredEmployee = user.userRoleId;
+      }
+    }
+    finalLeaderboardData = [];
+    for (let lbdata of leaderboardData) {
+      for (let user of users) {
+        if (lbdata.empId === user.empId) {
+          if (user.userRoleId.toString() === hiredEmployee.toString()) {
+            finalLeaderboardData.push(lbdata);
+          }
         }
       }
     }
   }
-
   res.json(finalLeaderboardData);
 });
 

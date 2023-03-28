@@ -107,4 +107,77 @@ KtSession.get("/ktsessionRatings/:empId", async (req, res) => {
   res.json(ktSessionRatingsData);
 });
 
+KtSession.route("/save-kt-ratings/:ktId").post(async (req, res) => {
+  try {
+    const ktId = req.params.ktId;
+    const kt = await KtSessions.findById(ktId);
+
+    kt.ratings.push(req.body);
+    kt.save();
+
+    const newKT = await KtSessions.findById(ktId).lean();
+    let qualityRateSum = 0;
+    let commRateSum = 0;
+    let clarityRateSum = 0;
+    let knowledgeAndSkillRateSum = 0;
+
+    let overallQualityRate = 0;
+    let overallCommRate = 0;
+    let overallClarityRate = 0;
+    let overallKnowledgeAndSkillRate = 0;
+    let overallRate = 0;
+
+    let ratingCount = newKT.ratings.length;
+
+    newKT.ratings.forEach((rating) => {
+      qualityRateSum += rating.qualityRate;
+      commRateSum += rating.commRate;
+      clarityRateSum += rating.clarityRate;
+      knowledgeAndSkillRateSum += rating.knowledgeAndSkillRate;
+    });
+
+    overallQualityRate = Math.floor(qualityRateSum / ratingCount);
+    overallCommRate = Math.floor(commRateSum / ratingCount);
+    overallClarityRate = Math.floor(clarityRateSum / ratingCount);
+    overallKnowledgeAndSkillRate = Math.floor(
+      knowledgeAndSkillRateSum / ratingCount
+    );
+
+    overallRate = Math.floor(
+      (qualityRateSum +
+        commRateSum +
+        clarityRateSum +
+        knowledgeAndSkillRateSum) /
+        (ratingCount * 4)
+    );
+
+    const updateKT = await KtSessions.findByIdAndUpdate(ktId, {
+      overallRating: overallRate,
+      overallQuality: overallQualityRate,
+      overallComm: overallCommRate,
+      overallClarity: overallClarityRate,
+      overallKnowledgeAndSkill: overallKnowledgeAndSkillRate,
+    });
+
+    res.status(200).json({
+      message: "Your request is successful",
+    });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Your request is unsuccessful", error: err });
+  }
+});
+
+KtSession.get("/get-kt-ratings/:ktId", async (req, res) => {
+  const ktId = req.params.ktId;
+  KtSessions.findById(ktId, (err, kt) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).json({ overallRating: kt.overallRating });
+    }
+  });
+});
+
 module.exports = KtSession;
