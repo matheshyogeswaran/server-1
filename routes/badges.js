@@ -1,10 +1,10 @@
 const express = require("express");
-const leaderBoard = express.Router();
+const badges = express.Router();
 
 const Users = require("../models/user.model");
 const QuizSubmissions = require("../models/quizSubmission.model");
 
-leaderBoard.get("/getLeaderboardData/:currentUser", async (req, res) => {
+badges.get("/getLeaderboardData/:currentUser", async (req, res) => {
   let quizSubmissions = await QuizSubmissions.find();
   let users = await Users.find();
   let leaderboardData = [];
@@ -102,9 +102,15 @@ leaderBoard.get("/getLeaderboardData/:currentUser", async (req, res) => {
   res.json(finalLeaderboardData);
 });
 
-leaderBoard.get("/showbadge/:currentUser", async (req, res) => {
+badges.get("/showbadge/:currentUser", async (req, res) => {
   const currentuser = req.params.currentUser;
   const user = await Users.findOne({ _id: currentuser });
+
+  if (!user || !user.hasOwnProperty("badges")) {
+    res.status(404).send("User or badge field not found");
+    return;
+  }
+
   user?.badges.forEach((badge, index) => {
     if (index === user?.badges.length - 1)
       switch (badge.badgeValue) {
@@ -121,4 +127,4 @@ leaderBoard.get("/showbadge/:currentUser", async (req, res) => {
   });
 });
 
-module.exports = leaderBoard;
+module.exports = badges;
