@@ -5,12 +5,12 @@ const Users = require("../models/user.model");
 const FinalProjectAssignments = require("../models/finalProjectAssignment.model");
 
 evaluateSubmission.post("/toEvaluateSubmission", async (req, res) => {
-  const { empId, score, feedback, show } = req.body;
-  let users = await Users.findOne({ empId });
+  const { empId, score, feedback, show, gradedBy } = req.body;
+  const users = await Users.findOne({ empId });
+
   await FinalProjectAssignments.updateOne(
-    { userId: users._id, status: true },
-    { status: false },
-    { new: true }
+    { userId: users?._id, status: true },
+    { status: false }
   );
   let data = {
     projectScore: score,
@@ -18,17 +18,18 @@ evaluateSubmission.post("/toEvaluateSubmission", async (req, res) => {
     status: true,
     show: show,
     gradedOn: Date.now(),
+    gradedBy,
   };
   //find and update
   let updated = await FinalProjectAssignments.updateOne(
     {
-      userId: users._id,
+      userId: users?._id,
       status: false,
     },
     data
   );
   // sending updating status to forntend
-  if (updated.modifiedCount === 1) res.json(true);
+  if (updated?.modifiedCount === 1) res.json(true);
   else res.json(false);
 });
 

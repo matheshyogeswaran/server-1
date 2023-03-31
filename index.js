@@ -23,8 +23,6 @@ app.use(require("./routes/departments"));
 app.use(require("./routes/jobtitles"));
 app.use(require("./routes/chapters"));
 app.use(require("./routes/chapterReport"));
-app.use(require("./routes/unit"));
-app.use(require("./routes/chapter"));
 app.use(require("./routes/overviewReport"));
 app.use(require("./routes/quizSubmissions"));
 app.use(require("./routes/ktsessionRating"));
@@ -40,7 +38,9 @@ app.use(require("./routes/articlelComment"));
 app.use(require("./routes/report"));
 app.use(require("./routes/downloadSubmission"));
 app.use(require("./routes/scoreEditLog"));
-
+app.use(require("./routes/badges"));
+app.use(require("./routes/quizFront"));
+app.use(require("./routes/quizReport"));
 
 app.use("/units", require("./routes/units"));
 app.use("/kts", require("./routes/ktsessions"));
@@ -55,9 +55,9 @@ mongoose.set("strictQuery", false);
 // format
 // mongodb+srv://<username>:<password>@cluster0.mongodb.net/<database>?retryWrites=true&w=majority
 // const connUrl = "mongodb://127.0.0.1:27017/nets";
-// const connUrl = "mongodb://localhost:27017/NETS";
-const connUrl =
-  "mongodb+srv://admin:o2rRfSYGKkUCHG8s@cluster0.eh378xa.mongodb.net/netsTest?retryWrites=true&w=majority";
+const connUrl = "mongodb://localhost:27017/NETS";
+// const connUrl =
+//   "mongodb+srv://admin:o2rRfSYGKkUCHG8s@cluster0.eh378xa.mongodb.net/netsTest?retryWrites=true&w=majority";
 
 mongoose
   .connect(connUrl, {
