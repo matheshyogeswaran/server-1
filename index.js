@@ -23,8 +23,6 @@ app.use(require("./routes/departments"));
 app.use(require("./routes/jobtitles"));
 app.use(require("./routes/chapters"));
 app.use(require("./routes/chapterReport"));
-app.use(require("./routes/unit"));
-app.use(require("./routes/chapter"));
 app.use(require("./routes/overviewReport"));
 app.use(require("./routes/quizSubmissions"));
 app.use(require("./routes/ktsessionRating"));
@@ -40,7 +38,9 @@ app.use(require("./routes/articlelComment"));
 app.use(require("./routes/report"));
 app.use(require("./routes/downloadSubmission"));
 app.use(require("./routes/scoreEditLog"));
-
+app.use(require("./routes/badges"));
+app.use(require("./routes/quizFront"));
+app.use(require("./routes/quizReport"));
 
 app.use("/units", require("./routes/units"));
 app.use("/kts", require("./routes/ktsessions"));
@@ -53,7 +53,9 @@ app.use((req, res, next) => {
 
 mongoose.set("strictQuery", false);
 // format
+
 const connUrl = process.env.MONGO_LOCAL_URI;
+
 mongoose
   .connect(connUrl, {
     useUnifiedTopology: true,

@@ -7,6 +7,7 @@ const ScoreEditLog = new mongoose.Schema(
     score: [{ type: Number }],
     upgradedBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
     upgradedOn: [{ type: Date, default: Date.now() }],
+    upgradedBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
   },
   { collection: "scoreeditlog" }
 );
