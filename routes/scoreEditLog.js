@@ -71,82 +71,94 @@ scoreEditLog.post("/updateScore", async (req, res) => {
 });
 
 scoreEditLog.get("/getScoreEditLog", async (req, res) => {
-  let editlogArr = [];
+  try {
+    let editlogArr = [];
 
-  const editLog = await ScoreEditLog.find();
-  for (let editlog of editLog) {
-    let editlogResult = {};
+    const editLog = await ScoreEditLog.find();
+    for (let editlog of editLog) {
+      let editlogResult = {};
 
-    //getting submitted employee name
-    const [user] = await Users.find({ _id: editlog.submittedBy });
-    const name = user.firstName + " " + user.lastName;
+      //getting submitted employee name
+      const [user] = await Users.find({ _id: editlog.submittedBy });
+      const name = user?.firstName + " " + user?.lastName;
+      // if user is not found
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
 
-    //getting graded supervisor name
-    const [upgradedBy] = await Users.find({ _id: editlog.upgradedBy });
-    const supName = upgradedBy?.firstName + " " + upgradedBy?.lastName;
+      //getting graded supervisor name
+      const [upgradedBy] = await Users.find({ _id: editlog.upgradedBy });
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
 
-    let dateArr = [];
-    for (let time of editlog.upgradedOn) {
-      const monthNames = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-      ];
+      const supName = upgradedBy?.firstName + " " + upgradedBy?.lastName;
+      // formatting date and time
+      let dateArr = [];
+      for (let time of editlog.upgradedOn) {
+        const monthNames = [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
+        ];
 
-      let date = time;
-      let year = date.getFullYear();
-      let month = monthNames[date.getMonth()];
+        let date = time;
+        let year = date.getFullYear();
+        let month = monthNames[date.getMonth()];
 
-      let datee = date.getDate();
-      datee < 10 ? (datee = "0" + datee) : (datee = datee);
-      datee === "01" || datee === "11" || datee === "21"
-        ? (datee = datee + "st".sup())
-        : datee === "02" || datee === "22"
-        ? (datee = datee + "nd".sup())
-        : datee === "03" || datee === "13"
-        ? (datee = datee + "rd".sup())
-        : (datee = datee + "th".sup());
+        let datee = date.getDate();
+        datee < 10 ? (datee = "0" + datee) : (datee = datee);
+        datee === "01" || datee === "11" || datee === "21"
+          ? (datee = datee + "st".sup())
+          : datee === "02" || datee === "22"
+          ? (datee = datee + "nd".sup())
+          : datee === "03" || datee === "13"
+          ? (datee = datee + "rd".sup())
+          : (datee = datee + "th".sup());
 
-      let hours = date.getHours();
-      const dayNight = hours < 13 || hours === 00 ? "AM" : "PM";
-      hours < 13 ? (hours = hours) : (hours -= 12);
-      hours < 10 ? (hours = "0" + hours) : (hours = hours);
+        let hours = date.getHours();
+        const dayNight = hours < 13 || hours === 00 ? "AM" : "PM";
+        hours < 13 ? (hours = hours) : (hours -= 12);
+        hours < 10 ? (hours = "0" + hours) : (hours = hours);
 
-      let minutes = date.getMinutes();
-      minutes < 10 ? (minutes = "0" + minutes) : (minutes = minutes);
-      let submittedOn =
-        datee +
-        " " +
-        month +
-        " " +
-        year +
-        ", " +
-        hours +
-        ":" +
-        minutes +
-        " " +
-        dayNight;
-      dateArr.push(submittedOn);
+        let minutes = date.getMinutes();
+        minutes < 10 ? (minutes = "0" + minutes) : (minutes = minutes);
+        let submittedOn =
+          datee +
+          " " +
+          month +
+          " " +
+          year +
+          ", " +
+          hours +
+          ":" +
+          minutes +
+          " " +
+          dayNight;
+        dateArr.push(submittedOn);
+      }
+      editlogResult = {
+        projectName: editlog.projectName,
+        submittedBy: name,
+        score: editlog.score,
+        upgradedOn: dateArr,
+        upgradedBy: supName,
+      };
+      editlogArr.push(editlogResult);
     }
-    editlogResult = {
-      projectName: editlog.projectName,
-      submittedBy: name,
-      score: editlog.score,
-      upgradedOn: dateArr,
-      upgradedBy: supName,
-    };
-    editlogArr.push(editlogResult);
+    res.json(editlogArr);
+  } catch (err) {
+    res.status(500).json({ message: "Internal server error" });
   }
-  res.json(editlogArr);
 });
 
 module.exports = scoreEditLog;
