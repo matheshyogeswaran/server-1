@@ -117,8 +117,8 @@ authenticationRoutes.route("/authentication/addFurtherDetails").post(async (req,
     });
 });
 
-authenticationRoutes.route("/authentication/verifyToken").post(async (req, res) => {
-  const token = req.body.token;
+authenticationRoutes.route("/authentication/verifyToken/:token").get(async (req, res) => {
+  const token = req.params.token;
   jwt.verify(token, process.env.JWT_SECRET, function (err, decoded) {
     if (err) {
       return res.json({
@@ -128,7 +128,7 @@ authenticationRoutes.route("/authentication/verifyToken").post(async (req, res) 
       });
     } else {
       return res.json({
-        message: decoded,
+        // message: decoded,
         status: true,
         expTime: process.env.JWT_EXP,
       });
