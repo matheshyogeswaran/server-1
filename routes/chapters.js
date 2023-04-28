@@ -1,33 +1,39 @@
-const express = require("express");   //import express module
+const express = require("express"); //import express module
 const chapterRoutes = express.Router();
-const Chapter = require("../models/chapter.model");  //import the chapter model
+const Chapter = require("../models/chapter.model"); //import the chapter model
 
-chapterRoutes.route("/chapters").get(function (req, res) {
+chapterRoutes.route("/chapters").get(function(req, res) {
   res.json([
     {
-      url: "http://localhost:1337/chapters/showAllChapters",  //endpoint
+      url: "http://localhost:1337/chapters/showAllChapters", //endpoint
       method: "get",
       desc: "Shows all Chapter's data from database",
     },
   ]);
 });
 
-chapterRoutes.route("/chapters/showAllChapters").get(async (req, res) => {  //await is used by async to wait for the result of two mongodb populate queries.
-  const chapters = await Chapter.find({}).populate("depID").populate("createdBy");//populate method is used to replace a document's ObjectId reference fields with their actual referenced document.here the 'depID' field and the 'createdBy' field are populated with their corresponding referenced documents.
-  res.json(chapters);//send the array of documents as a JSON response to the client that made the HTTP request.
+chapterRoutes.route("/chapters/showAllChapters").get(async (req, res) => {
+  //await is used by async to wait for the result of two mongodb populate queries.
+  const chapters = await Chapter.find({})
+    .populate("depID")
+    .populate("createdBy"); //populate method is used to replace a document's ObjectId reference fields with their actual referenced document.here the 'depID' field and the 'createdBy' field are populated with their corresponding referenced documents.
+  res.json(chapters); //send the array of documents as a JSON response to the client that made the HTTP request.
 });
 
 //--------------------------------------------------------------------------------------------
 
-chapterRoutes.route("/chapters/getEnrolledChapters/:depID").get(async (req, res) => {
-  const depID = req.params.depID;  //The value of the 'depID' parameter is assigned to a constant variable 'depID'.
-  const chapters = await Chapter.find({ depID: depID }).populate("depID")
-  res.json(chapters);
-});
+chapterRoutes
+  .route("/chapters/getEnrolledChapters/:depID")
+  .get(async (req, res) => {
+    const depID = req.params.depID; //The value of the 'depID' parameter is assigned to a constant variable 'depID'.
+    const chapters = await Chapter.find({ depID: depID }).populate("depID");
+    res.json(chapters);
+  });
 
 //---------------------------------------------------------------------------------------------------
 
-chapterRoutes.route("/chapters/isChapterAvailable").post(function (req, res) {  //endpoint with post request
+chapterRoutes.route("/chapters/isChapterAvailable").post(function(req, res) {
+  //endpoint with post request
   const chaptername = req.body.chaptername;
   Chapter.findOne({ chaptername: chaptername }, (err, chapters) => {
     if (err) {
@@ -48,7 +54,6 @@ chapterRoutes.route("/chapters/isChapterAvailable").post(function (req, res) {  
 //----------------------------------------------------------------------------------------
 
 chapterRoutes.route("/chapters/addChapter").post(async (req, res) => {
-
   const chapterName = req.body.chapterName;
   const depID = req.body.depID;
   const createdBy = req.body.userID;
@@ -171,7 +176,6 @@ chapterRoutes.route("/chapters/enrollChapter").post(async (req, res) => {
       status: false,
     });
   }
-
 });
 
 //---------------------------------------------------------------------------------------
@@ -180,20 +184,20 @@ chapterRoutes.route("/chapters/:id").put(async (req, res) => {
   const { status } = req.body;
 
   Chapter.findByIdAndUpdate(id, { status: status }, { new: true })
-    .then(updatedChapter => {
+    .then((updatedChapter) => {
       if (!updatedChapter) {
         return res.status(404).send({
-          message: `Chapter is not found.`
+          message: `Chapter is not found.`,
         });
       }
       res.send({
         message: `Chapter was temporarly deleted successfully.`,
-        data: updatedChapter
+        data: updatedChapter,
       });
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({
-        message: `Error deleting Chapter : ${err.message}`
+        message: `Error deleting Chapter : ${err.message}`,
       });
     });
 });
@@ -201,6 +205,3 @@ chapterRoutes.route("/chapters/:id").put(async (req, res) => {
 //--------------------------------------------------------------------------------------
 
 module.exports = chapterRoutes;
-
-
-
