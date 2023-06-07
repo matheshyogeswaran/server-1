@@ -5,8 +5,8 @@ const FinalProjectAssignment = new mongoose.Schema(
     userId: { type: mongoose.Types.ObjectId, ref: "UserData" },
     requestedDate: { type: Date, default: Date.now() },
 
-    isProjectAssigned:{type:Boolean, default: false},
-    isProjectSubmitted:{type:Boolean, default: false},
+    isProjectAssigned: { type: Boolean, default: false },
+    isProjectSubmitted: { type: Boolean, default: false },
 
     projectName: { type: String },
     projectDescription: { type: String },
@@ -15,7 +15,7 @@ const FinalProjectAssignment = new mongoose.Schema(
     uploadedFileBySupervisor: { type: String },
     supAttachOriginalName: { type: String },
     supAttachFileSize: { type: String },
-    assignedOn:{type:Date},
+    assignedOn: { type: Date },
     acceptedBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
 
     uploadedFileByEmployee: { type: String },
@@ -26,14 +26,13 @@ const FinalProjectAssignment = new mongoose.Schema(
 
     // Note
     // Use the name uploadedFileByEmployee for better understanding
-    // Because, Both Supervisor, Hired Employees Submissions are here. 
-    // submittedFile: { type: String }, 
+    // Because, Both Supervisor, Hired Employees Submissions are here.
+    // submittedFile: { type: String },
 
-    projScore: { type: Number, default: 0 },
+    projectScore: { type: Number, default: 0 },
     feedback: { type: String },
     gradedOn: { type: Date },
     gradedBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
-
 
     status: { type: Boolean, default: false },
     show: { type: Boolean, default: false },
@@ -43,5 +42,8 @@ const FinalProjectAssignment = new mongoose.Schema(
   }
 );
 
-const model = mongoose.model("FinalProjectAssignmentData", FinalProjectAssignment);
+const model = mongoose.model(
+  "FinalProjectAssignmentData",
+  FinalProjectAssignment
+);
 module.exports = model;

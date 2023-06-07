@@ -19,23 +19,24 @@ leaderBoard.get("/getLeaderboardData/:currentUser", async (req, res) => {
       let count = 0;
       for (let quizSub of quizSubmissions) {
         // If the quiz submission belongs to the current user, add its score to the total score
-        if (user._id.toString() === quizSub.userId.toString()) {
-          totalScore += quizSub.score;
+        if (user?._id.toString() === quizSub?.userId.toString()) {
+          totalScore += quizSub?.score;
           count++;
         }
       }
       // Calculate the average score for the user
       let averageScore = totalScore / count;
       let lbData = {
-        empId: user.empId,
-        firstName: user.firstName,
-        lastName: user.lastName,
+        empId: user?.empId,
+        firstName: user?.firstName,
+        lastName: user?.lastName,
+        userImage: user?.userImage,
         totalScore,
         averageScore,
       };
 
       // Check if the user has any quiz submissions, and add their data to the leaderboard array
-      const userExist = await QuizSubmissions.find({ userId: user._id });
+      const userExist = await QuizSubmissions.find({ userId: user?._id });
       if (userExist.length > 0) {
         leaderboardData.push(lbData);
       }
@@ -54,10 +55,10 @@ leaderBoard.get("/getLeaderboardData/:currentUser", async (req, res) => {
     finalLeaderboardData = [];
     for (let lbdata of leaderboardData) {
       for (let user of users) {
-        if (lbdata.empId === user.empId) {
-          if (user.userRoleId.toString() === userRole?.userRoleId.toString()) {
+        if (lbdata.empId === user?.empId) {
+          if (user?.userRoleId.toString() === userRole?.userRoleId.toString()) {
             // If the user is the current user, update their current score
-            if (user._id.toString() === currentUser) {
+            if (user?._id.toString() === currentUser) {
               currentUserScore = lbdata?.averageScore;
             }
             finalLeaderboardData.push(lbdata);
@@ -94,16 +95,17 @@ leaderBoard.get("/getLeaderboardData", async (req, res) => {
       let count = 0;
       for (let quizSub of quizSubmissions) {
         // If the quiz submission belongs to the current user, add its score to the total score
-        if (user._id.toString() === quizSub.userId.toString()) {
-          totalScore += quizSub.score;
+        if (user?._id.toString() === quizSub?.userId.toString()) {
+          totalScore += quizSub?.score;
           count++;
         }
       }
       let averageScore = totalScore / count;
       let lbData = {
-        empId: user.empId,
-        firstName: user.firstName,
-        lastName: user.lastName,
+        empId: user?.empId,
+        firstName: user?.firstName,
+        lastName: user?.lastName,
+        userImage: user?.userImage,
         totalScore,
         averageScore,
       };
@@ -120,19 +122,19 @@ leaderBoard.get("/getLeaderboardData", async (req, res) => {
 
     //get the top scored employee userRole Id
     if (leaderboardData?.[0]?.totalScore > 0) {
-      let hiredEmployee = leaderboardData[0].empId;
+      let hiredEmployee = leaderboardData[0]?.empId;
 
       for (let user of users) {
-        if (user.empId === hiredEmployee) {
-          hiredEmployee = user.userRoleId;
+        if (user?.empId === hiredEmployee) {
+          hiredEmployee = user?.userRoleId;
         }
       }
       finalLeaderboardData = [];
       // if user is hiredEmployee add the data to the array
       for (let lbdata of leaderboardData) {
         for (let user of users) {
-          if (lbdata.empId === user.empId) {
-            if (user.userRoleId.toString() === hiredEmployee.toString()) {
+          if (lbdata.empId === user?.empId) {
+            if (user?.userRoleId.toString() === hiredEmployee.toString()) {
               finalLeaderboardData.push(lbdata);
             }
           }

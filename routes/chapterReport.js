@@ -8,48 +8,61 @@ const Units = require("../models/unit.model");
 
 chapterReport.get("/chapterReport/:empId", async (req, res) => {
   try {
-    let reqEmpId = req.params.empId;
-    let quizSubArr = [];
-    // Retrieve user associated with the quiz submission
-    let quizSubmissionsData = await quizSubmissions.find();
-    for (quizSub of quizSubmissionsData) {
-      let user = await users.findOne({ _id: quizSub.userId });
-      // If user's empId matches requested empId, add quiz submission to quizSubArr
-      if (user?.empId === reqEmpId) {
-        let quizObj = {
-          ...quizSub.toObject(),
-          empId: user?.empId,
-        };
-        quizSubArr.push(quizObj);
-      }
-    }
+    let reqEmpId = req?.params?.empId;
+    let userData = {};
     let chapterResults = [];
     let chapters = await Chapters.find();
+    // if chapters not found,send 404
+    if (!chapters) {
+      return res.status(404).json({ error: "chapters not found" });
+    }
     for (let chap of chapters) {
       let chapterUnit = {};
-      let unit = [];
-      for (let quizSub of quizSubArr) {
-        if (chap._id.toString() === quizSub.chapterId.toString()) {
-          let units = await Units.find({ _id: quizSub.unitId });
+      let unitData = [];
+      let quizSubmissionsData = await quizSubmissions.find({
+        chapterId: chap?._id,
+      });
+      //if quiz data not found,send 404
+      if (!quizSubmissionsData) {
+        return res.status(404).json({ error: "Quiz not found" });
+      }
+      for (let quizSub of quizSubmissionsData) {
+        let user = await users?.findOne({ _id: quizSub?.userId });
+        //if user data not found,send 404
+        if (!user) {
+          return res.status(404).json({ error: "user not found" });
+        }
+        // If user's empId matches requested empId,
+        if (user?.empId === reqEmpId) {
+          userData = {
+            empId: user?.empId,
+            userImage: user?.userImage,
+            empName: user?.firstName + " " + user?.lastName,
+          };
+          let units = await Units.find({ _id: quizSub?.unitId });
+          //if units data not found,send 404
+          if (!units) {
+            return res.status(404).json({ error: "units not found" });
+          }
+          //add unitName and score of the unit's quiz
           for (let unit of units) {
-            // Check if the quiz submission is associated with the current chapter
-            if (quizSub.unitId.toString() === unit._id.toString()) {
-              chapterUnit = {
-                unitName: unit.unitName,
-                score: quizSub.score,
-              };
-            }
+            chapterUnit = {
+              unitName: unit?.unitName,
+              score: quizSub?.score,
+            };
           }
           // Add chapterUnit to unit array
-          unit.push(chapterUnit);
+          unitData.push(chapterUnit);
         }
       }
       // If unit array is not empty, add chapter name and unit array to chapterResults
-      if (unit.length > 0)
-        chapterResults.push({ chapterName: chap.chapterName, units: unit });
+      if (unitData.length > 0)
+        chapterResults.push({
+          chapterName: chap?.chapterName,
+          units: unitData,
+        });
     }
-
-    res.json(chapterResults);
+    res.json({ chapterReportData: chapterResults, userData });
   } catch (err) {
     res.status(500).send("Internal Server Error");
   }
