@@ -9,18 +9,6 @@ app.use(
     methods: "GET,POST,PUT,DELETE,OPTIONS",
   })
 );
-app.use(express.urlencoded({ extended: true })); // if we want to test with postman x-www-form-urlencoded
-app.use(express.json());
-app.use(express.static("public")); // store files in server
-
-//route imports
-app.use(require("./routes/authentication"));
-
-
-app.use(require("./routes/users"));
-app.use(require("./routes/sample"));
-app.use(require("./routes/userroles"));
-app.use(require("./routes/departments"));
 app.use(require("./routes/jobtitles"));
 app.use(require("./routes/chapters"));
 app.use(require("./routes/chapterReport"));
@@ -37,7 +25,7 @@ app.use(require("./routes/general"));
 app.use(require("./routes/report"));
 app.use(require("./routes/downloadSubmission"));
 
-app.use((req,res,next)=>{
+app.use((req, res, next) => {
   console.log("Server Accessed");
   next();
 });
