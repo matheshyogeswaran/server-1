@@ -12,10 +12,8 @@ app.use(
 app.use(express.urlencoded({ extended: true })); // if we want to test with postman x-www-form-urlencoded
 app.use(express.json());
 app.use(express.static("public")); // store files in server
-
 //route imports
 app.use(require("./routes/authentication"));
-
 app.use(require("./routes/users"));
 app.use(require("./routes/sample"));
 app.use(require("./routes/userroles"));
@@ -44,15 +42,16 @@ app.use(require("./routes/badges"));
 app.use(require("./routes/quizFront"));
 app.use(require("./routes/quizReport"));
 app.use(require("./routes/feedback"));
+app.use(require("./routes/projectScore"));
 app.use("/units", require("./routes/units"));
 app.use("/kts", require("./routes/ktsessions"));
 app.use("/arts", require("./routes/articles"));
 
-
 mongoose.set("strictQuery", false);
 // format
 
-const connUrl = process.env.MONGO_LOCAL_URI;
+
+const connUrl = "mongodb://127.0.0.1:27017/NETS";
 
 mongoose
   .connect(connUrl, {

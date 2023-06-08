@@ -2,7 +2,7 @@ const express = require("express");
 const jobtitleRoutes = express.Router();
 const Department = require("../models/department.model");
 
-
+//-----------------------------------------------------------------------------------------------
 jobtitleRoutes.route("/jobtitles").get(function (req, res) {
   res.json([
     {
@@ -12,7 +12,7 @@ jobtitleRoutes.route("/jobtitles").get(function (req, res) {
     },
   ]);
 });
-
+//-----------------------------------------------------------------------------------------------
 jobtitleRoutes.route("/jobtitles/showAllJobtitles").get(function (req, res) {
   Department.find({}, (err, jobtitles) => {
     if (err) {
@@ -22,7 +22,7 @@ jobtitleRoutes.route("/jobtitles/showAllJobtitles").get(function (req, res) {
     }
   });
 });
-
+//----------------------------------------------------------------------------------------------
 jobtitleRoutes
   .route("/jobtitles/isJobtitleAvailable")
   .post(function (req, res) {
@@ -42,13 +42,12 @@ jobtitleRoutes
       }
     });
   });
-
+//-------------------------------------------------------------------------------------------
 jobtitleRoutes.route("/jobtitles/addJobtitle").post(async (req, res) => {
   const jobTitlename = req.body.jobtitleName;
   const depID = req.body.depID;
   // //const createdBy = "Name";
   const createdOn = Date.now();
-
   Department.findById(depID, (err, department) => {
     if (err) {
       console.log(err);
@@ -68,79 +67,54 @@ jobtitleRoutes.route("/jobtitles/addJobtitle").post(async (req, res) => {
       });
     }
   });
-  // 8888888888888888888888888888888888888888888888888888888888888888
 
-  // jobtitleDetails
-  //   .save()
-  //   .then((item) =>
-  //     res.json({
-  //       message: "Jobtitle Added Successfully",
-  //       status: true,
-  //     })
-  //   )
-  // .catch((err) => {
-  //   if (err.code === 11000) {
-  //     return res.json({
-  //       message: "Jobtitle already exists",
-  //       status: false,
-  //     });
-  //   }
-  //   res.status(500).send({ error: err });
-  //   console.log(err);
-  // });
 });
 
+//-----------------------------------------------------------------------------------------
 jobtitleRoutes.route("/jobtitles/editJobtitle").post(async (req, res) => {
-  // console.log(req.body);
   newName = req.body.newName;
   reason = req.body.reason;
   editedId = req.body.editedId;
   fromName = req.body.fromName;
-  const newReasonObject = {
-    reasonID: Math.floor(Date.now()) / 1000,
-    reasonValue: reason,
-    modifiedBy: "Ishvini",
-    fromName: fromName,
-    toName: newName,
-  };
-  try {
-    const document = await Jobtitle.findById(editedId);
-    document.reasons.push(newReasonObject);
-    Jobtitle.updateOne(
-      { _id: editedId },
-      { $set: { jobTitlename: newName, reasons: document.reasons } }
-    )
-      .then((result) => {
-        return res.json({
-          message: "Jobtitle Name Updated Successfully",
-          status: true,
-        });
-      })
-      .catch((err) => {
-        return res.json({
-          message: "Error in Updating Jobtitle Name",
-          status: false,
-        });
-      });
-  } catch {
+  const departments = await Department.findOne({ "Jobtitle._id": editedId });
+  if (departments === null) {
     return res.json({
-      message: "Jobtitle Not Found. Try Again !!!",
+      message: "Jobtitle Not Found !",
       status: false,
     });
   }
-  // ------------------------------------------------------------------------------
+  const jobtitle = (departments.Jobtitle).filter(e => (e._id).equals(editedId))[0]
+  jobtitle.reasons.push({
+    reasonID: Date.now(),
+    fromName: jobtitle.jobTitlename,
+    newName: newName,
+    reason: reason
+  })
+  jobtitle.jobTitlename = newName;
+  departments.save((err, data) => {
+    if (data) {
+      return res.json({
+        message: "Jobtitle Name Updated Successfully",
+        status: true,
+      });
+    } else {
+      return res.json({
+        message: "Error in Updating Jobtitle Name",
+        status: false,
+      });
+    }
+  })
 });
 
+//------------------------------------------------------------------------------------------
 jobtitleRoutes.route("/jobtitles/deleteJobtitle").post(async (req, res) => {
   const id = req.body.id;
-  const reason = req.body.reason;
   try {
     const departments = await Department.findOne({ "Jobtitle._id": id });
     // Remove the job title from the Jobtitle array
     departments.Jobtitle = departments.Jobtitle.filter(
       (jobtitle) => jobtitle._id.toString() !== id
     );
-
     // Save the updated Department object
     await departments.save();
 
@@ -156,5 +130,33 @@ jobtitleRoutes.route("/jobtitles/deleteJobtitle").post(async (req, res) => {
     });
   }
 })
+//----------------------------------------------------------------------------------------------
+jobtitleRoutes.route("/jobtitles/allocatechapter").post(async (req, res) => {
+  chaptersAllocated = req.body.chaptersAllocated;
+  editedId = req.body.editedId;
+
+  const departments = await Department.findOne({ "Jobtitle._id": editedId });
+  if (departments === null) {
+    return res.json({
+      message: "Chapter allocated Not Found !",
+      status: false,
+    });
+  }
+  const jobtitle = (departments.Jobtitle).filter(e => (e._id).equals(editedId))[0]
+  jobtitle.chaptersAllocated = chaptersAllocated;
+  departments.save((err, data) => {
+    if (data) {
+      return res.json({
+        message: "Default chapters allocated Successfully",
+        status: true,
+      });
+    } else {
+      return res.json({
+        message: "Error in Allocating default chapters",
+        status: false,
+      });
+    }
+  })
+});
 
 module.exports = jobtitleRoutes;

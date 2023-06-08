@@ -7,18 +7,25 @@ const Users = require("../models/user.model");
 KtSession.get("/ktsessionRatings/:empId", async (req, res) => {
   try {
     let reqEmpId = req.params.empId;
-    let [user] = await Users.find({ empId: reqEmpId }).select({ _id: 1 });
+    let [user] = await Users.find({ empId: reqEmpId });
     // if user is not found
     if (!user) {
       return res
         .status(404)
         .json({ error: "User not found in the KT session section" });
     }
+    //add user details
+    const userData = {
+      empId: user?.empId,
+      userImage: user?.userImage,
+      empName: user?.firstName + " " + user?.lastName,
+    };
 
     let ktSessionRatings = await KtSessions.find({ createdBy: user?._id });
     let ktSessionRatingsData = {};
+    let sessionData = [];
 
-    if (ktSessionRatings.length > 0) {
+    if (ktSessionRatings?.length > 0) {
       // data for overall ratings
       let overAllRating = 0;
       let overAllQuality = 0;
@@ -27,26 +34,29 @@ KtSession.get("/ktsessionRatings/:empId", async (req, res) => {
       let overAllKnowledgeAndSkill = 0;
 
       //data to progress bar
-      let overAllRatingData = [];
       let overAllQualityData = [];
       let overAllCommData = [];
       let overAllClarityData = [];
       let overAllKnowledgeAndSkillData = [];
 
       for (let ratings of ktSessionRatings) {
+        let session = {
+          sessionName: ratings?.sessionName,
+          overallRating: ratings?.overallRating,
+        };
+        sessionData.push(session);
         //data to progress bar
-        overAllRatingData.push(ratings.overallRating);
-        overAllQualityData.push(ratings.overallQuality);
-        overAllCommData.push(ratings.overallComm);
-        overAllClarityData.push(ratings.overallClarity);
-        overAllKnowledgeAndSkillData.push(ratings.overallKnowledgeAndSkill);
+        overAllQualityData.push(ratings?.overallQuality);
+        overAllCommData.push(ratings?.overallComm);
+        overAllClarityData.push(ratings?.overallClarity);
+        overAllKnowledgeAndSkillData.push(ratings?.overallKnowledgeAndSkill);
 
         //storing overAllRating
-        overAllRating += ratings.overallRating;
-        overAllQuality += ratings.overallQuality;
-        overAllComm += ratings.overallComm;
-        overAllClarity += ratings.overallClarity;
-        overAllKnowledgeAndSkill += ratings.overallKnowledgeAndSkill;
+        overAllRating += ratings?.overallRating;
+        overAllQuality += ratings?.overallQuality;
+        overAllComm += ratings?.overallComm;
+        overAllClarity += ratings?.overallClarity;
+        overAllKnowledgeAndSkill += ratings?.overallKnowledgeAndSkill;
       }
 
       //progressbar data calculation
@@ -61,12 +71,12 @@ KtSession.get("/ktsessionRatings/:empId", async (req, res) => {
           data === 1
             ? count1++
             : data === 2
-            ? count2++
-            : data === 3
-            ? count3++
-            : data === 4
-            ? count4++
-            : count5++
+              ? count2++
+              : data === 3
+                ? count3++
+                : data === 4
+                  ? count4++
+                  : count5++
         );
         let totalCount = count1 + count2 + count3 + count4 + count5;
         overAllRatingData = [
@@ -80,7 +90,7 @@ KtSession.get("/ktsessionRatings/:empId", async (req, res) => {
         return overAllRatingData;
       };
 
-      overAllRatingData = individualRates(overAllRatingData);
+      //call individualRates to count  the stars individually like 1 stars,2 stars,3 stars,4 stars,5 stars
       overAllQualityData = individualRates(overAllQualityData);
       overAllCommData = individualRates(overAllCommData);
       overAllClarityData = individualRates(overAllClarityData);
@@ -90,17 +100,19 @@ KtSession.get("/ktsessionRatings/:empId", async (req, res) => {
 
       //rating
       let finalOverAllRating = (
-        overAllRating / ktSessionRatings.length
+        overAllRating / ktSessionRatings?.length
       ).toFixed(1);
       let finalOverAllQuality = (
-        overAllQuality / ktSessionRatings.length
+        overAllQuality / ktSessionRatings?.length
       ).toFixed(1);
-      let finalOverAllComm = (overAllComm / ktSessionRatings.length).toFixed(1);
+      let finalOverAllComm = (overAllComm / ktSessionRatings?.length).toFixed(
+        1
+      );
       let finalOverAllClarity = (
-        overAllClarity / ktSessionRatings.length
+        overAllClarity / ktSessionRatings?.length
       ).toFixed(1);
       let finalOverAllKnowledgeAndSkill = (
-        overAllKnowledgeAndSkill / ktSessionRatings.length
+        overAllKnowledgeAndSkill / ktSessionRatings?.length
       ).toFixed(1);
 
       //data for progress bar
@@ -110,15 +122,15 @@ KtSession.get("/ktsessionRatings/:empId", async (req, res) => {
         overAllClarityData,
         overAllKnowledgeAndSkillData,
       ];
-
       ktSessionRatingsData = {
+        sessionData,
+        userData,
         finalOverAllRating,
         finalOverAllQuality,
         finalOverAllComm,
         finalOverAllClarity,
         finalOverAllKnowledgeAndSkill,
-        numOfKtSessions: ktSessionRatings.length,
-        overAllRatingData,
+        numOfKtSessions: ktSessionRatings?.length,
         ratingData,
       };
     }

@@ -7,17 +7,23 @@ const Users = require("../models/user.model");
 Article.get("/articleRatings/:empId", async (req, res) => {
   try {
     let reqEmpId = req.params.empId;
-    let [user] = await Users.find({ empId: reqEmpId }).select({ _id: 1 });
+    let [user] = await Users.find({ empId: reqEmpId });
     // if user not found
     if (!user) {
       return res
         .status(404)
         .json({ error: "User not found in the article section" });
     }
+    //add user details
+    const userData = {
+      empId: user?.empId,
+      userImage: user?.userImage,
+      empName: user?.firstName + " " + user?.lastName,
+    };
 
     //find articles of requested user
     let articleRatings = await Articles.find({ createdBy: user?._id });
-    let articleRatingsData = {};
+    let articleRatingsData = [];
 
     // if the required employee written article, continue
     if (articleRatings.length > 0) {
@@ -35,6 +41,11 @@ Article.get("/articleRatings/:empId", async (req, res) => {
       let overAllKnowledgeAndSkillData = [];
 
       for (let ratings of articleRatings) {
+        let article = {
+          articleName: ratings.articleName,
+          overallRating: ratings.overallRating,
+        };
+        articleRatingsData.push(article);
         //data to progress bar
         overAllRatingData.push(ratings.overallRating);
         overAllQualityData.push(ratings.overallQuality);
@@ -115,6 +126,8 @@ Article.get("/articleRatings/:empId", async (req, res) => {
       ];
 
       articleRatingsData = {
+        articleRatingsData,
+        userData,
         finalOverAllRating,
         finalOverAllQuality,
         finalOverAllComm,

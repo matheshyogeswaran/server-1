@@ -10,19 +10,19 @@ feedback.get("/getFeedback/:currentUser", async (req, res) => {
     const projSubmi = await FinalProjSubmission.findOne({
       userId: currentUser,
     });
-    s;
+
     // if project submission is not found
     if (!projSubmi) {
       return res.status(404).json({ error: "Project submission not found" });
     }
     let feedbackData = {};
     // if suoervisor allow to show the feedback to employee,continue
-    if (projSubmi.show) {
+    if (projSubmi?.show) {
       const user = await Users.findOne({
-        _id: projSubmi.gradedBy,
+        _id: projSubmi?.gradedBy,
       });
       const supName = user?.firstName + " " + user?.lastName;
-
+      const supImage = user?.userImage;
       const monthNames = [
         "January",
         "February",
@@ -46,18 +46,18 @@ feedback.get("/getFeedback/:currentUser", async (req, res) => {
         "Friday",
         "Saturday",
       ];
-      let date = projSubmi.gradedOn;
-      let year = date.getFullYear();
-      let month = monthNames[date.getMonth()];
-      let datee = date.getDate();
-      let day = days[date.getDay()];
+      let date = projSubmi?.gradedOn;
+      let year = date?.getFullYear();
+      let month = monthNames[date?.getMonth()];
+      let datee = date?.getDate();
+      let day = days[date?.getDay()];
 
-      let hours = date.getHours();
+      let hours = date?.getHours();
       const dayNight = hours < 13 ? "AM" : "PM";
       hours < 13 ? (hours = hours) : (hours -= 12);
       hours < 10 ? (hours = "0" + hours) : (hours = hours);
 
-      let minutes = date.getMinutes();
+      let minutes = date?.getMinutes();
       minutes < 10 ? (minutes = "0" + minutes) : (minutes = minutes);
 
       let gradedOn =
@@ -76,15 +76,17 @@ feedback.get("/getFeedback/:currentUser", async (req, res) => {
         dayNight;
 
       feedbackData = {
-        score: projSubmi.projectScore,
-        feedback: projSubmi.feedback,
+        projectName: projSubmi?.projectName,
+        score: projSubmi?.projectScore,
+        feedback: projSubmi?.feedback,
         gradedOn,
         gradedBy: supName,
-        show: projSubmi.show,
+        supervisorImage: supImage,
+        show: projSubmi?.show,
       };
     } else {
       feedbackData = {
-        show: projSubmi.show,
+        show: projSubmi?.show,
       };
     }
     res.json(feedbackData);

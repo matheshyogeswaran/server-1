@@ -17,7 +17,7 @@ const User = new mongoose.Schema(
     jobPosition: { type: mongoose.Schema.Types.ObjectId, ref: "DepartmentData", },
     badges: [{ badgeValue: { type: String }, earnedOn: { type: Date }, },],
     earnedScoresByQuiz: { numOfQuizzesDone: { type: Number }, totalScoresEarned: { type: Number }, },
-    isProjectRequested:{type:Boolean, default:false},
+    isProjectRequested: { type: Boolean, default: false },
   },
   {
     collection: "users",

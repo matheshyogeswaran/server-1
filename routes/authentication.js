@@ -23,17 +23,20 @@ async function verifyGoogleToken(token) {
 
 authenticationRoutes.route("/authentication/login").post(async (req, res) => {
   try {
+    console.log("Inside the login")
     if (req.body.credential) {
       const verificationResponse = await verifyGoogleToken(req.body.credential);
       if (verificationResponse.error) {
         return res.status(400).json({ message: "Login failed", status: false });
       }
       const profile = verificationResponse?.payload;
-
+      console.log("Hello")
       const userDocument = await User.findOne({ emailAddress: profile?.email });
       if (userDocument) {
+        console.log("UYser Documeent Found")
         if (userDocument.verified === true) {
-          res.status(200).json({
+          console.log("response sent");
+          return res.status(200).json({
             message: "Success",
             user: {
               picture: profile?.picture,
@@ -72,7 +75,7 @@ authenticationRoutes.route("/authentication/login").post(async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({
-      message: "Back end Error",
+      message: "Backend Error",
       status: false
     });
   }

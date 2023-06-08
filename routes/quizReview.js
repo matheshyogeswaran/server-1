@@ -27,14 +27,14 @@ review.get("/review/:currentUser/:unitId", async (req, res) => {
         user?.questions?.map((question) => {
           //check whether the submitted answer is correct or not
           let checkedStatus = false;
-          if (question.correctAnswer === question.submittedAnswer) {
+          if (question?.correctAnswer === question?.submittedAnswer) {
             checkedStatus = true;
           }
           let questData = {
-            question: question.questionValue,
-            answers: question.answers,
-            submittedAnswer: question.submittedAnswer,
-            correctAnswer: question.correctAnswer,
+            question: question?.questionValue,
+            answers: question?.answers,
+            submittedAnswer: question?.submittedAnswer,
+            correctAnswer: question?.correctAnswer,
             checkedStatus,
           };
           reviewData.push(questData);
