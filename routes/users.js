@@ -21,7 +21,6 @@ userRoutes.route("/users/showAllUsers").get(auth([ur.hiredEmployee, ur.contentCr
 });
 
 userRoutes.route("/users/getAllUnverifiedUsers").get(function (req, res) {
-  // const selectedDepartmentName = departments.find(department => department._id === deptID)?.depName;
   User.find({ verified: false })
     .populate({ path: "department", select: "depName createdBy Jobtitle" })
     .exec((err, users) => {
