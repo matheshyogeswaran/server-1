@@ -21,13 +21,13 @@ quizFront.get("/quizFront", async (req, res) => {
         for (const unitId of chapter.unitsOffer) {
           // Find the unit object that matches the unit ID
           const unit = unitsData.find(
-            (unit) => unit._id.toString() === unitId.toString()
+            (unit) => unit?._id.toString() === unitId.toString()
           );
           let count = 0;
 
           // Count the number of quiz submissions for this unit
           for (const submission of quizSubmissionData) {
-            if (submission.unitId.toString() === unit._id.toString()) {
+            if (submission?.unitId.toString() === unit?._id.toString()) {
               count++;
             }
           }
@@ -35,16 +35,16 @@ quizFront.get("/quizFront", async (req, res) => {
           // Create an object with the unit name and the count of quiz submissions and add it to the units array if there are submissions
           if (count > 0) {
             units.push({
-              unitId: unit._id,
-              unitName: unit.unitName,
+              unitId: unit?._id,
+              unitName: unit?.unitName,
               count,
             });
           }
         }
 
         // Create an object with the chapter name and the units data and add it to the chapters array
-        chapters.push({
-          chapterName: chapter.chapterName,
+        chapters?.push({
+          chapterName: chapter?.chapterName,
           units,
         });
       }

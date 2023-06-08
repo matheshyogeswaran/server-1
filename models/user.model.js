@@ -1,7 +1,11 @@
 const mongoose = require("mongoose");
 const User = new mongoose.Schema(
   {
-    userRole: { type: String },
+    userRoleId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "UserRoleData",
+      required: true,
+    },
     empId: { type: String, required: true },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
@@ -13,11 +17,13 @@ const User = new mongoose.Schema(
     verified: { type: Boolean, default: false },
     userStatus: { type: String, default: "active" },
     userImage: { type: String },
-    department: { type: mongoose.Schema.Types.ObjectId, ref: "DepartmentData", },
-    jobPosition: { type: mongoose.Schema.Types.ObjectId, ref: "DepartmentData", },
-    badges: [{ badgeValue: { type: String }, earnedOn: { type: Date }, },],
-    earnedScoresByQuiz: { numOfQuizzesDone: { type: Number }, totalScoresEarned: { type: Number }, },
-    isProjectRequested:{type:Boolean, default:false},
+    department: { type: mongoose.Schema.Types.ObjectId, ref: "DepartmentData" },
+    jobPosition: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "DepartmentData",
+    },
+    badges: [{ badgeValue: { type: String }, earnedOn: { type: Date } }],
+    isProjectRequested: { type: Boolean, default: false },
   },
   {
     collection: "users",

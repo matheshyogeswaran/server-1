@@ -42,10 +42,10 @@ app.use(require("./routes/badges"));
 app.use(require("./routes/quizFront"));
 app.use(require("./routes/quizReport"));
 app.use(require("./routes/feedback"));
+app.use(require("./routes/projectScore"));
 app.use("/units", require("./routes/units"));
 app.use("/kts", require("./routes/ktsessions"));
 app.use("/arts", require("./routes/articles"));
-
 
 mongoose.set("strictQuery", false);
 // format

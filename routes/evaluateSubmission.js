@@ -59,9 +59,10 @@ evaluateSubmission.get("/getEvaluatedFeedback/:empId", async (req, res) => {
         .json({ error: "Final project assignment not found" });
     }
     let evaluatedFeedback = {
-      projectScore: finalProj.projectScore,
-      feedback: finalProj.feedback,
-      show: finalProj.show,
+      projectScore: finalProj?.projectScore,
+      feedback: finalProj?.feedback,
+      show: finalProj?.show,
+      userImage: user?.userImage,
     };
     res.json(evaluatedFeedback);
   } catch (err) {

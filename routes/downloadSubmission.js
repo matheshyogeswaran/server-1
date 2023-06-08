@@ -19,7 +19,7 @@ downloadSubmission.get("/getZipFile/:empId", async (req, res) => {
       return res.status(404).send({ error: "Submission not found" });
     }
 
-    let fileName = projSub.submittedFile;
+    let fileName = projSub.empAttachOriginalName;
     let fileURL = "http://localhost:1337/files/" + fileName;
 
     res.json(fileURL);

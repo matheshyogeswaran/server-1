@@ -18,6 +18,7 @@ const QuizSubmission = new mongoose.Schema(
       required: true,
     },
     score: { type: Number },
+    correctAnsCount: { type: Number },
     attemptedTime: { type: Date, default: Date.now() },
     submittedTime: { type: Date, default: Date.now() },
     questions: [
@@ -28,6 +29,7 @@ const QuizSubmission = new mongoose.Schema(
         submittedAnswer: { type: Number },
       },
     ],
+    badgeGiven: { type: Boolean, default: false },
   },
   {
     collection: "quizsubmissions",
