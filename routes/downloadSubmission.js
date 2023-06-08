@@ -5,13 +5,28 @@ let Users = require("../models/user.model");
 let FinalProjectAssignments = require("../models/finalProjectAssignment.model");
 
 downloadSubmission.get("/getZipFile/:empId", async (req, res) => {
-  let empId = req.params.empId;
-  let [user] = await Users.find({ empId: empId });
-  let [projSub] = await FinalProjectAssignments.find({ userId: user._id });
-  let fileName = projSub.submittedFile;
-  let fileURL = "http://localhost:1337/files/" + fileName;
+  try {
+    let empId = req.params.empId;
+    let [user] = await Users.find({ empId: empId });
+    // if user is not found
+    if (!user) {
+      return res.status(404).send({ error: "User not found" });
+    }
+    let [projSub] = await FinalProjectAssignments.find({ userId: user?._id });
 
-  res.json(fileURL);
+    //if project submission is not found
+    if (!projSub) {
+      return res.status(404).send({ error: "Submission not found" });
+    }
+
+    let fileName = projSub.submittedFile;
+    let fileURL = "http://localhost:1337/files/" + fileName;
+
+    res.json(fileURL);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Internal server error" });
+  }
 });
 
 module.exports = downloadSubmission;

@@ -4,43 +4,52 @@ const user = express.Router();
 const users = require("../models/user.model");
 const userRoles = require("../models/userRole.model");
 const departments = require("../models/department.model");
+const QuizSubmissions = require("../models/quizSubmission.model");
+const KtSessions = require("../models/ktSession.model");
+const Articles = require("../models/article.model");
 
-user.get("/report", async (req, res) => {
-  let userWithUserRoles = [];
-  let jobTitle;
-  let department;
-  let finalData = [];
-  //add userRole into users collection
-  let usersData = await users.find();
-  for (let user of usersData) {
-    let { userRoleValue } = await userRoles.findOne({ _id: user.userRoleId });
-    let addUserRole = {
-      ...user.toObject(),
-      userRoleValue,
-    };
-    userWithUserRoles.push(addUserRole);
-  }
-  //add jobTitle into users collection
-  for (let userUserRole of userWithUserRoles) {
-    let deptCollection = await departments.findOne({
-      _id: userUserRole.department,
-    });
-    for (let i = 0; i < deptCollection.jobTitles.length; i++) {
-      jobTitle = deptCollection.jobTitles[i].jobTitle;
+user.get("/showAllUsers", async (req, res) => {
+  try {
+    const usersData = await users.find();
+    let finalusers = [];
+    for (let user of usersData) {
+      const quizSubmission = await QuizSubmissions.find({ userId: user._id });
+      const ktSession = await KtSessions.find({ createdBy: user._id });
+      const article = await Articles.find({ createdBy: user._id });
+
+      //checking whether they submit a quiz or kt session or article
+      const validData =
+        quizSubmission.length > 0 || ktSession.length > 0 || article.length > 0;
+
+      if (validData) {
+        //getting userRole name
+        const { userRoleValue } = await userRoles.findOne({
+          _id: user?.userRoleId,
+        });
+        //get the department collection of the specific user
+        const departmentCollection = await departments.findOne({
+          _id: user?.department,
+        });
+        //get the jobtitle name
+        const jobTitle = departmentCollection.jobTitles.find((jobtitle) =>
+          jobtitle._id.equals(user.jobPosition)
+        ).jobTitle;
+        //make object of the data to be send to frontend
+        let addUserRole = {
+          ...user.toObject(),
+          userRoleValue,
+          depName: departmentCollection.depName,
+          jobTitle,
+        };
+        //push into a final array
+        finalusers.push(addUserRole);
+      }
     }
-    department = deptCollection.depName;
 
-    let addJobTitle = {
-      empId: userUserRole.empId,
-      firstName: userUserRole.firstName,
-      lastName: userUserRole.lastName,
-      userRoleValue: userUserRole.userRoleValue,
-      jobTitle,
-      department,
-    };
-    finalData.push(addJobTitle);
+    res.json(finalusers);
+  } catch (err) {
+    res.status(500).json({ message: "Internal server error" });
   }
-  res.json(finalData);
 });
 
 module.exports = user;

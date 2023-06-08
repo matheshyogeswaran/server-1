@@ -13,6 +13,7 @@ const Department = new mongoose.Schema(
         chaptersAllocated: [{ type: Schema.Types.ObjectId, ref: "ChapterData" }],
         reasons: [{ type: Object }],
       },],
+
     reasons: [{ type: Object }],
   },
   {
@@ -21,5 +22,3 @@ const Department = new mongoose.Schema(
 );
 const model = mongoose.model("DepartmentData", Department);
 module.exports = model;
-
-
