@@ -1,7 +1,7 @@
 const express = require("express");
 const departmentRoutes = express.Router();
 const Department = require("../models/department.model");
-
+//----------------------------------------------------------------------------------------------
 departmentRoutes.route("/departments").get(function (req, res) {
   res.json([
     {
@@ -11,49 +11,50 @@ departmentRoutes.route("/departments").get(function (req, res) {
     },
   ]);
 });
-
+//---------------------------------------------------------------------------------------------
+// Define a route for showing all departments
 departmentRoutes.route("/departments/showAllDepartments").get(function (req, res) {
-    Department.find({}, (err, departments) => {
-      if (err) {
-        res.send(err);
-      } else {
-        res.json(departments);
-      }
-    });
+  Department.find({}, (err, departments) => {   // Find all departments in the database
+    if (err) {  // If there's an error, send an error response
+      res.send(err);
+    } else {  // If there are no errors, send the departments as a response
+      res.json(departments);
+    }
   });
-
+});
+//----------------------------------------------------------------------------------------------
+// Define a route for checking if a department is available
 departmentRoutes
   .route("/departments/isDepartmentAvailable")
   .post(function (req, res) {
-    const depName = req.body.depName;
-    Department.findOne({ departmentname: depName }, (err, departments) => {
-      if (err) {
+    const depName = req.body.depName;   // Get the department name from the request body
+    Department.findOne({ departmentname: depName }, (err, departments) => {  // Find a department with the given name in the database
+      if (err) {   // If there's an error, send an error response
         console.log(err);
         res.send(err);
       } else {
-        if (departments) {
+        if (departments) {   // If the department exists, send a true status response
           res.json({ status: true });
           console.log(true);
-        } else {
+        } else {   // If the department does not exist, send a false status response
           res.json({ status: false });
           console.log(false);
         }
       }
     });
   });
-
+//------------------------------------------------------------------------------------------------
+// Define a route for adding a department
 departmentRoutes.route("/departments/addDepartment").post(async (req, res) => {
-  // console.log(req.body);
   const depName = req.body.departmentName;
-  // const createdBy = "";
   const createdOn = Date.now();
   console.log(depName);
-  const departmentDetails = new Department({
+  const departmentDetails = new Department({    // Create a new department object
     depName,
     createdOn,
   });
-  departmentDetails
-    .save()
+  // Save the new department to the database
+  departmentDetails.save()
     .then((item) =>
       res.json({
         message: "Department Added Successfully",
@@ -71,26 +72,25 @@ departmentRoutes.route("/departments/addDepartment").post(async (req, res) => {
       res.status(500).send({ error: err });
     });
 });
-
+//--------------------------------------------------------------------------------------------
+// Define a route for editing a department
 departmentRoutes.route("/departments/editDepartment").post(async (req, res) => {
-  // console.log(req.body);
-  newName = req.body.newName;
+  newName = req.body.newName;   // Get the new name for the department from the request body
   reason = req.body.reason;
   editedId = req.body.editedId;
   fromName = req.body.fromName;
-  const newReasonObject = {
+  const newReasonObject = {   // Create a new reason object for the change
     reasonID: Math.floor(Date.now()) / 1000,
     reasonValue: reason,
-    modifiedBy: "Ishvini",
     fromName: fromName,
     toName: newName,
   };
   try {
-    const document = await Department.findById(editedId);
+    const document = await Department.findById(editedId);  // Find the department being edited in the database
     document.reasons.push(newReasonObject);
     Department.updateOne(
-      { _id: editedId },
-      { $set: { depName: newName, reasons: document.reasons } }
+      { _id: editedId },  //update the id as edited id for the perticular department
+      { $set: { depName: newName, reasons: document.reasons } }   //update the depName as newName and update the reason object for the particular department
     )
       .then((result) => {
         return res.json({
@@ -110,17 +110,15 @@ departmentRoutes.route("/departments/editDepartment").post(async (req, res) => {
       status: false,
     });
   }
-  // ------------------------------------------------------------------------------
-});
 
+});
+//-----------------------------------------------------------------------------------------------
 departmentRoutes
   .route("/departments/deleteDepartment")
   .post(async (req, res) => {
     id = req.body.id;
-    reason = req.body.reason;
     try {
       const deletedDepartment = await Department.deleteOne({ _id: id });
-      // res.status(200).json(deletedchapter);
       return res.json({
         message: "Department Deleted Successfully",
         status: true,
@@ -132,4 +130,7 @@ departmentRoutes
       });
     }
   });
+
+//--------------------------------------------------------------------------
+
 module.exports = departmentRoutes;
