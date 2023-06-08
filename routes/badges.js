@@ -4,7 +4,7 @@ const badges = express.Router();
 const Users = require("../models/user.model");
 const QuizSubmissions = require("../models/quizSubmission.model");
 
-badges.get("/storeBadge/:currentUser", async (req, res) => {
+badges.post("/storeBadge", async (req, res) => {
   try {
     // calculating the rank of the user
     let quizSubmissions = await QuizSubmissions.find();
@@ -47,7 +47,7 @@ badges.get("/storeBadge/:currentUser", async (req, res) => {
     finalLeaderboardData = [];
     for (let lbdata of leaderboardData) {
       for (let user of users) {
-        if (lbdata.empId === user.empId) {
+        if (lbdata?.empId === user?.empId) {
           // if user role is hiredEmployee
           if (
             user.userRoleId.toString() === userUserRole?.userRoleId.toString()
@@ -59,13 +59,20 @@ badges.get("/storeBadge/:currentUser", async (req, res) => {
     }
 
     //badge giving
-    const currentUser = req.params.currentUser;
+    const currentUser = req.body?.currentUser;
+    const unitId = req.body?.unitId;
     const userEmpId = await Users.findOne({ _id: currentUser });
     // if user is not found,throw an error
     if (!userEmpId) {
       throw new Error("User not found");
     }
-
+    const [quizSubmission] = await QuizSubmissions.find({
+      userId: currentUser,
+      unitId: unitId,
+    });
+    if (!quizSubmission) {
+      throw new Error("Unit not found");
+    }
     //find the index of the user
     let rank = finalLeaderboardData.findIndex(
       (data) => data?.empId === userEmpId?.empId
@@ -74,49 +81,59 @@ badges.get("/storeBadge/:currentUser", async (req, res) => {
     if (rank === -1) {
       throw new Error("User is not in the leaderboard");
     }
-    // if rank is less than 4
-    switch (rank) {
-      case 0:
-        userEmpId?.badges?.push({
-          badgeValue: "Gold",
-          earnedOn: Date.now(),
-        });
-        userEmpId?.save((err) => {
-          if (err) {
-            throw err;
-          } else {
-            res.status(200).send("Gold badge added successfully");
-          }
-        });
-        break;
-      case 1:
-        userEmpId?.badges.push({
-          badgeValue: "Silver",
-          earnedOn: Date.now(),
-        });
-        userEmpId?.save((err) => {
-          if (err) {
-            throw err;
-          } else {
-            res.status(200).send("Silver badge added successfully");
-          }
-        });
-        break;
-      case 2:
-        userEmpId?.badges?.push({
-          badgeValue: "Bronze",
-          earnedOn: Date.now(),
-        });
-        userEmpId?.save((err) => {
-          if (err) {
-            throw err;
-          } else {
-            res.status(200).send("Bronze badge added successfully");
-          }
-        });
-        break;
-      default:
-        res.json("Badge is not applicable for this user");
+
+    if (quizSubmission?.badgeGiven === false) {
+      // if rank is less than 4
+      switch (rank) {
+        case 0:
+          //update badgeGiven field in the quizSubmission collection
+          await QuizSubmissions.updateOne(
+            { userId: currentUser, unitId: unitId },
+            { badgeGiven: true },
+            { new: true }
+          );
+          //update badges array field in the user collection
+          userEmpId?.badges?.push({
+            badgeValue: "Gold",
+            earnedOn: Date.now(),
+          });
+          userEmpId?.save((err) => {
+            if (err) {
+              throw err;
+            } else {
+              res.status(200).send("Gold badge added successfully");
+            }
+          });
+          break;
+        case 1:
+          userEmpId?.badges.push({
+            badgeValue: "Silver",
+            earnedOn: Date.now(),
+          });
+          userEmpId?.save((err) => {
+            if (err) {
+              throw err;
+            } else {
+              res.status(200).send("Silver badge added successfully");
+            }
+          });
+          break;
+        case 2:
+          userEmpId?.badges?.push({
+            badgeValue: "Bronze",
+            earnedOn: Date.now(),
+          });
+          userEmpId?.save((err) => {
+            if (err) {
+              throw err;
+            } else {
+              res.status(200).send("Bronze badge added successfully");
+            }
+          });
+          break;
+        default:
+          res.json("Badge is not applicable for this user");
+      }
     }
   } catch (err) {
     res.status(500).send(err.message);
@@ -126,7 +143,7 @@ badges.get("/storeBadge/:currentUser", async (req, res) => {
 badges.get("/showbadge/:currentUser", async (req, res) => {
   try {
     const currentuser = req.params.currentUser;
-    const user = await Users.findOne({ _id: currentuser });
+    const user = await Users.findOne({ empId: currentuser });
 
     // if user is not found
     if (!user) {
@@ -149,7 +166,28 @@ badges.get("/showbadge/:currentUser", async (req, res) => {
           break;
       }
     });
-    res.json(badgeArr);
+
+    let badgecount = {};
+    if (badgeArr.length > 0) {
+      let gold = 0;
+      let silver = 0;
+      let bronze = 0;
+      for (let countbadge of badgeArr) {
+        if (countbadge === 0) {
+          gold++;
+        } else if (countbadge === 1) {
+          silver++;
+        } else if (countbadge === 2) {
+          bronze++;
+        }
+      }
+      badgecount = {
+        gold,
+        silver,
+        bronze,
+      };
+    }
+    res.json(badgecount);
   } catch (error) {
     res.status(500).send("Server error");
   }
