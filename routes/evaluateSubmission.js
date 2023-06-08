@@ -12,7 +12,7 @@ evaluateSubmission.post("/toEvaluateSubmission", async (req, res) => {
     if (!users) {
       return res.status(404).json({ message: "User not found" });
     }
-    await FinalProjectAssignments.updateOne(
+    const updatedSubmission = await FinalProjectAssignments.updateOne(
       { userId: users?._id, status: true },
       { status: false }
     );
