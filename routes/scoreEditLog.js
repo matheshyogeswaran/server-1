@@ -146,7 +146,7 @@ scoreEditLog?.get("/getScoreEditLog", async (req, res) => {
           : (datee = datee + "th".sup());
 
         let hours = date?.getHours();
-        const dayNight = hours < 13 || hours === 00 ? "AM" : "PM";
+        const dayNight = hours < 13 || hours === 0 ? "AM" : "PM";
         hours < 13 ? (hours = hours) : (hours -= 12);
         hours < 10 ? (hours = "0" + hours) : (hours = hours);
 
