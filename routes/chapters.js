@@ -79,10 +79,11 @@ chapterRoutes.route("/chapters/editChapter").post(async (req, res) => {
   reason = req.body.reason;
   editedId = req.body.editedId;
   fromName = req.body.fromName;
+  modifiedBy = req.body.modifiedBy
   const newReasonObject = {
     reasonID: Math.floor(Date.now()) / 1000,
     reasonValue: reason,
-    modifiedBy: "Ishvini",
+    modifiedBy: modifiedBy,
     fromName: fromName,
     toName: newName,
   };
@@ -194,7 +195,38 @@ chapterRoutes.route("/chapters/getEnrolledChapters/:depID").get(async (req, res)
 });
 
 //---------------------------------------------------------------------------------------------------
+
 module.exports = chapterRoutes;
 
 
 
+// chapterRoutes.route("/chapters/acceptChapter").post(async (req, res) => {
+//   const chapID = req.body.chapID;
+//   const userID = req.body.userID;
+//   try {
+//     const document = await Chapter.findById(chapID);
+//     document.accepted.push(userID);
+//     Chapter.updateOne(
+//       { _id: chapID },
+//       { $set: { accepted: document.accepted } }
+//     )
+//       .then((result) => {
+//         return res.json({
+//           message: "Chapter accepted Successfully",
+//           status: true,
+//         });
+//       })
+//       .catch((err) => {
+//         return res.json({
+//           message: "Error in accepted Chapter Name",
+//           status: false,
+//         });
+//       });
+//   } catch {
+//     return res.json({
+//       message: "Chapter Not Found. Try Again !!!",
+//       status: false,
+//     });
+//   }
+
+// });
