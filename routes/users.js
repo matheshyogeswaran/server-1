@@ -20,8 +20,53 @@ userRoutes.route("/users/showAllUsers").get(auth([ur.hiredEmployee, ur.contentCr
     });
 });
 
+
+userRoutes.route("/users/getLoggedinUserData/:userID").get(function (req, res) {
+  const userID = req.params.userID;
+  User.find({ _id: userID })
+    .populate({ path: "department", select: "depName createdBy Jobtitle" })
+    .exec((err, users) => {
+      if (err) {
+        res.send(err);
+      } else {
+        const jobTitleID = users[0].jobPosition;
+        let jobTitle;
+        if(users[0].jobPosition){
+          jobTitle = (users[0]?.department?.Jobtitle).find(item => item?._id.equals(users[0]?.jobPosition))?.jobTitlename
+        }else{
+          jobTitle = null;
+        }
+        let userData = users.map((e) => {
+          return (
+            {
+              userID: e?._id,
+              fname: e?.firstName,
+              lname: e?.lastName,
+              phone: e?.phoneNumber,
+              email: e?.emailAddress,
+              image: e?.userImage,
+              userRole: e?.userRole,
+              empId: e?.empId,
+              dob: e?.dob,
+              department: {
+                departmentID: e?.department?._id,
+                departmentName: e?.department?.depName
+              },
+              jobTitle: {
+                jobTitleID: jobTitleID,
+                jobTitle: jobTitle
+              },
+              submittedOn: e?.SubmittedOn,
+              verified: e?.verified
+            }
+          )
+        })
+        res.json(userData);
+      }
+    });
+});
+
 userRoutes.route("/users/getAllUnverifiedUsers").get(function (req, res) {
-  // const selectedDepartmentName = departments.find(department => department._id === deptID)?.depName;
   User.find({ verified: false })
     .populate({ path: "department", select: "depName createdBy Jobtitle" })
     .exec((err, users) => {

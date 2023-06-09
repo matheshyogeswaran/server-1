@@ -59,11 +59,11 @@ scoreEditLog.put("/updateScore", async (req, res) => {
     } else {
       // If a score log already exists, update it
       scoreEditLog.projectName = projectName;
-      scoreEditLog?.score.push(score);
-      scoreEditLog?.feedback.push(feedback);
-      scoreEditLog?.show.push(show);
-      scoreEditLog?.upgradedOn.push(upgradedOn);
-      scoreEditLog?.upgradedBy.push(gradedBy);
+      scoreEditLog?.score?.push(score);
+      scoreEditLog?.feedback?.push(feedback);
+      scoreEditLog?.show?.push(show);
+      scoreEditLog?.upgradedOn?.push(upgradedOn);
+      scoreEditLog?.upgradedBy?.push(gradedBy);
     }
 
     scoreEditLog

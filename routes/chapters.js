@@ -1,6 +1,54 @@
 const express = require("express");   //import express module
 const chapterRoutes = express.Router();
 const Chapter = require("../models/chapter.model");  //import the chapter model
+const User = require("../models/user.model");
+
+chapterRoutes.route("/chapters/acceptRequest").post(function (req, res) {
+  const empid = req.body.empid;
+  const chapid = req.body.chapid;
+  const action = req.body.action;
+  Chapter.updateOne({ _id: chapid }, { $pull: { requested: empid } }, (err, chapters) => {
+    if (err) {
+      console.log(err);
+      res.json(
+        {
+          status: false,
+          message: "Error in update Chapter data"
+        },
+      );
+    } else {
+      // console.log(chapters);
+      if (action == 1) {
+        User.updateOne({ _id: empid }, { $push: { acceptedAdditionalChapter: chapid } }, (err, users) => {
+          if (err) {
+            console.log(err);
+            res.json(
+              {
+                status: false,
+                message: "Error in update User data"
+              },
+            );
+          } else {
+            console.log("Success")
+            res.json(
+              {
+                status: true,
+                message: "Chapter Request accepted successfully"
+              },
+            );
+          }
+        });
+      }else{
+        res.json(
+          {
+            status: true,
+            message: "Chapter Request declined successfully"
+          },
+        );
+      }
+    }
+  })
+});
 
 chapterRoutes.route("/chapters").get(function (req, res) {
   res.json([
@@ -190,7 +238,8 @@ chapterRoutes.route("/chapters/enrollChapter").post(async (req, res) => {
 //--------------------------------------------------------------------------------------------
 chapterRoutes.route("/chapters/getEnrolledChapters/:depID").get(async (req, res) => {
   const depID = req.params.depID;  //The value of the 'depID' parameter is assigned to a constant variable 'depID'.
-  const chapters = await Chapter.find({ depID: depID }).populate("depID").populate("requested")
+  const chapters = await Chapter.find({ depID: depID, requested: { $ne: [] } })
+    .populate("requested");
   res.json(chapters);
 });
 
