@@ -57,7 +57,8 @@ userRoutes.route("/users/getLoggedinUserData/:userID").get(function (req, res) {
                 jobTitle: jobTitle
               },
               submittedOn: e?.SubmittedOn,
-              verified: e?.verified
+              verified: e?.verified,
+              acceptedChapters: e?.acceptedAdditionalChapter
             }
           )
         })
