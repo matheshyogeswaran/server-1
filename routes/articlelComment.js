@@ -2,7 +2,7 @@ const express = require("express");
 const articleCommentRoutes = express.Router();
 const articleComment = require("../models/Article.model");
 
-articleCommentRoutes.route("/get-all-articles").get(function (req, res) {
+articleCommentRoutes.route("/get-all-articles").get(function(req, res) {
   articleComment.find({}, (err, articles) => {
     if (err) {
       res.status(500).send(err);
@@ -14,7 +14,7 @@ articleCommentRoutes.route("/get-all-articles").get(function (req, res) {
 
 articleCommentRoutes
   .route("/get-article-comments-by-article-id/:artiId")
-  .get(function (req, res) {
+  .get(function(req, res) {
     const { artiId } = req.params;
     articleComment.findById(artiId, (err, comments) => {
       if (err) {
