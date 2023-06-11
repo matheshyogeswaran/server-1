@@ -12,15 +12,27 @@ const storage = multer.diskStorage({
 })
 
 const fileFilter = (req, file, cb) => {
-    const allowedFileTypes = ["application/x-zip-compressed", "application/octet-stream", "application/zip"]
-    if (allowedFileTypes.includes(file.mimetype)) {
+    console.log("Hello")
+    const allowedFileTypes = ["application/x-zip-compressed", "application/octet-stream", "application/zip"];
+    const allowedExtensions = [".zip", ".rar", ".tar", ".7z"];
+
+    const fileExtension = path.extname(file.originalname);
+    const isValidFileType = allowedFileTypes.includes(file.mimetype);
+    const isValidFileExtension = allowedExtensions.includes(fileExtension);
+
+    if (isValidFileType && isValidFileExtension) {
+        console.log("File Uploaded");
         cb(null, true);
     } else {
-        cb(null, false);
+        cb(new Error("File type"));
     }
 }
 
-let finalAssignmentSubmissionsUpload = multer({ storage, fileFilter });
+let finalAssignmentSubmissionsUpload = multer({
+    storage,
+    fileFilter,
+    limits: { fileSize: 1024 * 1024 * 50 }
+});
 
 module.exports = {
     finalAssignmentSubmissionsUpload
