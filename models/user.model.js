@@ -18,7 +18,7 @@ const User = new mongoose.Schema(
     badges: [{ badgeValue: { type: String }, earnedOn: { type: Date } }],
     earnedScoresByQuiz: { numOfQuizzesDone: { type: Number }, totalScoresEarned: { type: Number },},
     isProjectRequested: { type: Boolean, default: false },
-    acceptedAdditionalChapter: [{ type: mongoose.Schema.Types.ObjectId }],
+    acceptedAdditionalChapter: [{ type: mongoose.Schema.Types.ObjectId, ref: "ChapterData" }],
   },
   {
     collection: "users",
