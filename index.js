@@ -55,7 +55,8 @@ mongoose.set("strictQuery", false);
 // const connUrl = "mongodb://127.0.0.1:27017/nets";
 // const connUrl = "mongodb://localhost:27017/NETS";
 const connUrl =
-  "mongodb+srv://admin:o2rRfSYGKkUCHG8s@cluster0.eh378xa.mongodb.net/netsTest?retryWrites=true&w=majority";
+  "mongodb+srv://heshani:heshani@cluster0.ck9bx.mongodb.net/test?retryWrites=true&w=majority";
+// "mongodb+srv://admin:o2rRfSYGKkUCHG8s@cluster0.eh378xa.mongodb.net/netsTest?retryWrites=true&w=majority";
 
 mongoose
   .connect(connUrl, {

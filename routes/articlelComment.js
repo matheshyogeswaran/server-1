@@ -1,6 +1,6 @@
 const express = require("express");
 const articleCommentRoutes = express.Router();
-const articleComment = require("../models/article.model");
+const articleComment = require("../models/Article.model");
 
 articleCommentRoutes.route("/get-all-articles").get(function (req, res) {
   articleComment.find({}, (err, articles) => {

@@ -175,7 +175,7 @@ KtSession.get("/get-kt-ratings/:ktId", async (req, res) => {
     if (err) {
       res.status(500).send(err);
     } else {
-      res.status(200).json({ overallRating: kt.overallRating });
+      res.status(200).json(kt.overallRating);
     }
   });
 });
