@@ -58,11 +58,18 @@ evaluateSubmission.get("/getEvaluatedFeedback/:empId", async (req, res) => {
         .status(404)
         .json({ error: "Final project assignment not found" });
     }
+    // check whether there is a description for submission is uploaded by employee
+    let isDescription = false;
+    finalProj?.uploadedDescriptionByEmployee !== undefined &&
+      (isDescription = true);
+
     let evaluatedFeedback = {
       projectScore: finalProj?.projectScore,
       feedback: finalProj?.feedback,
       show: finalProj?.show,
       userImage: user?.userImage,
+      isDescription,
+      description: finalProj?.uploadedDescriptionByEmployee,
     };
     res.json(evaluatedFeedback);
   } catch (err) {

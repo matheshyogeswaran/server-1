@@ -6,7 +6,9 @@ const FinalProjectAssignments = require("../models/finalProjectAssignment.model"
 
 submissionTable.get("/getSubmissionTable", async (req, res) => {
   try {
-    let finalProjectAssignment = await FinalProjectAssignments.find();
+    let finalProjectAssignment = await FinalProjectAssignments.find({
+      isProjectSubmitted: true,
+    });
     let finalProjData = [];
     for (let finalProjAssign of finalProjectAssignment) {
       // Iterating over each final project assignment and finding submitted users
@@ -60,7 +62,9 @@ submissionTable.get("/getSubmissionTable", async (req, res) => {
           minutes +
           " " +
           dayNight;
-
+        let isFileToDownload = false;
+        finalProjAssign?.uploadedFileByEmployee !== undefined &&
+          (isFileToDownload = true);
         // Creating submission data object and pushing to final project data array
         let submiUser = {
           empId: subUser?.empId,
@@ -69,6 +73,7 @@ submissionTable.get("/getSubmissionTable", async (req, res) => {
           submittedOn,
           projectName: finalProjAssign?.projectName,
           status: finalProjAssign?.status,
+          isFileToDownload,
         };
         finalProjData.push(submiUser);
       }
