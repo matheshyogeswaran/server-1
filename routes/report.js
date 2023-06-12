@@ -2,7 +2,6 @@ const express = require("express");
 const user = express.Router();
 
 const users = require("../models/user.model");
-const userRoles = require("../models/userRole.model");
 const departments = require("../models/department.model");
 const QuizSubmissions = require("../models/quizSubmission.model");
 const KtSessions = require("../models/ktSession.model");
@@ -24,22 +23,18 @@ user?.get("/showAllUsers", async (req, res) => {
         article?.length > 0;
 
       if (validData) {
-        //getting userRole name
-        const userRole = await userRoles.findOne({
-          _id: user?.userRoleId,
-        });
         //get the department collection of the specific user
-        const departmentCollection = await departments.findOne({
+        const departmentCollection = await departments?.findOne({
           _id: user?.department,
         });
         //get the jobtitle name
-        const jobTitle = departmentCollection.jobTitles.find((jobtitle) =>
-          jobtitle._id.equals(user?.jobPosition)
-        ).jobTitle;
+        const jobTitle = departmentCollection?.Jobtitle?.find((jobtitle) =>
+          jobtitle?._id?.equals(user?.jobPosition)
+        )?.jobTitle;
         //make object of the data to be send to frontend
         let addUserRole = {
           ...user?.toObject(),
-          userRoleValue: userRole?.userRoleValue,
+          userRoleValue: user?.userRole,
           depName: departmentCollection?.depName,
           userImage: user?.userImage,
           jobTitle,

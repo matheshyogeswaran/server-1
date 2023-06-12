@@ -12,7 +12,10 @@ downloadSubmission.get("/getZipFile/:empId", async (req, res) => {
     if (!user) {
       return res.status(404).send({ error: "User not found" });
     }
-    let [projSub] = await FinalProjectAssignments.find({ userId: user?._id });
+    let [projSub] = await FinalProjectAssignments.find({
+      userId: user?._id,
+      isProjectSubmitted: { $exists: true },
+    });
 
     //if project submission is not found
     if (!projSub) {
@@ -20,7 +23,6 @@ downloadSubmission.get("/getZipFile/:empId", async (req, res) => {
     }
 
     let fileURL = projSub?.uploadedFileByEmployee;
-
     res.json(fileURL);
   } catch (error) {
     console.error(error);
