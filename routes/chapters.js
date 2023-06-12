@@ -2,6 +2,40 @@ const express = require("express");   //import express module
 const chapterRoutes = express.Router();
 const Chapter = require("../models/chapter.model");  //import the chapter model
 const User = require("../models/user.model");
+const Department = require("../models/department.model");
+
+chapterRoutes.route("/chapters/loadAllocatedChapters/:depid/:jobid").get(function (req, res) {
+  const depid = req.params.depid;
+  const jobid = req.params.jobid;
+  Department.findById(depid)
+    .populate({path:'Jobtitle.chaptersAllocated', select:"_id chapterName"})
+    .exec((err, departments) => {
+      if (err) {
+        res.json({ status: false, message: "Database Error" });
+      } else {
+        console.log("Hello ");
+        const chapterList = departments.Jobtitle.find((chapter) => chapter._id == jobid);
+        if (chapterList) {
+          res.json(chapterList);
+        } else {
+          res.json([]);
+        }
+      }
+    })
+});
+
+chapterRoutes.route("/chapters/loadAdditionalChapters/:uid").get(function (req, res) {
+  const uid = req.params.uid;
+  User.findById(uid,{acceptedAdditionalChapter:1})
+    .populate({path: "acceptedAdditionalChapter", select: " _id chapterName"})
+    .exec((err, users) => {
+      if (err) {
+        res.json({ status: false, message: "Database Error" });
+      } else {
+        res.json(users);
+      }
+    })
+});
 
 chapterRoutes.route("/chapters/acceptRequest").post(function (req, res) {
   const empid = req.body.empid;
