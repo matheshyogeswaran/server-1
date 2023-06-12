@@ -38,7 +38,7 @@ chapterRoutes.route("/chapters/acceptRequest").post(function (req, res) {
             );
           }
         });
-      }else{
+      } else {
         res.json(
           {
             status: true,

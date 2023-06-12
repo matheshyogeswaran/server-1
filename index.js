@@ -20,6 +20,7 @@ app.use(require("./routes/userroles"));
 app.use(require("./routes/departments"));
 app.use(require("./routes/jobtitles"));
 app.use(require("./routes/chapters"));
+app.use(require("./routes/commonChapters"));
 app.use(require("./routes/chapterReport"));
 app.use(require("./routes/overviewReport"));
 app.use(require("./routes/quizResult"));
