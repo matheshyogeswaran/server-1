@@ -9,7 +9,7 @@ const KtSession = new mongoose.Schema(
       ref: "ChapterData",
     },
     sessionName: { type: String },
-    sessionUrl: {type: String},
+    sessionUrl: { type: String },
     overallRating: { type: Number, default: 0 },
     overallQuality: { type: Number, default: 0 },
     overallComm: { type: Number, default: 0 },

@@ -2,15 +2,28 @@ const mongoose = require("mongoose");
 
 const QuizSubmission = new mongoose.Schema(
   {
-    quizBelongsToDepartmet:{type: String},
-    chapterId: {type: String},
-     
-    unitId:{type: String},
-    userId: {type: String},
+    quizBelongsToDepartmet: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "DepartmentData",
+    },
+    chapterId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ChapterData",
+      required: true,
+    },
+    unitId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "UnitData",
+      required: true,
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "UserData",
+      required: true,
+    },
     score: { type: Number },
     correctAnsCount: { type: Number },
     attemptedTime: { type: String },
-     
     submittedTime: { type: String },
     questions: [
       {
