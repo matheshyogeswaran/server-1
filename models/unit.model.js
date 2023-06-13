@@ -20,6 +20,10 @@ const Unit = new mongoose.Schema(
       quizDesc: {
           type: String,   
         },
+      timeLimit: {
+          type: Number,
+          // required: true
+        },
       questions: [
         {
           _id: {
@@ -30,18 +34,11 @@ const Unit = new mongoose.Schema(
           question: {
             type: String,   
           },
-          op1: {
-            type: String,   
-          },
-          op2: {
-            type: String,   
-          },
-          op3: {
-            type: String,   
-          },
-          op4: {
-            type: String,   
-          }, 
+          options: [
+            {
+              type: String,
+            }
+          ],
           correctAnswer: {
             type: Number,   
           },

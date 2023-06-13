@@ -42,9 +42,15 @@ app.use(require("./routes/badges"));
 app.use(require("./routes/quizFront"));
 app.use(require("./routes/quizReport"));
 
-app.use("/units", require("./routes/units"));
-app.use("/kts", require("./routes/ktsessions"));
-app.use("/arts", require("./routes/articles"));
+app.use('/units', require("./routes/units"));
+app.use('/kts', require("./routes/ktsessions"));
+app.use('/arts', require("./routes/articles"));
+app.use('/submissions', require("./routes/quizAnswers"));
+
+app.use('/editunits', require("./routes/editunits"));
+app.use('/editkts', require("./routes/editkts"));
+app.use('/editarticles', require("./routes/editarticles"));
+app.use('/editquestions', require("./routes/editquestions"));
 
 app.use((req, res, next) => {
   console.log("Server Accessed");
