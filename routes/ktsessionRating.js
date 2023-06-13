@@ -71,12 +71,12 @@ KtSession.get("/ktsessionRatings/:empId", async (req, res) => {
           data === 1
             ? count1++
             : data === 2
-              ? count2++
-              : data === 3
-                ? count3++
-                : data === 4
-                  ? count4++
-                  : count5++
+            ? count2++
+            : data === 3
+            ? count3++
+            : data === 4
+            ? count4++
+            : count5++
         );
         let totalCount = count1 + count2 + count3 + count4 + count5;
         overAllRatingData = [
@@ -140,7 +140,6 @@ KtSession.get("/ktsessionRatings/:empId", async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
 KtSession.get("/get-kt-ratings/:ktId", async (req, res) => {
   const ktId = req.params.ktId;
   KtSessions.findById(ktId, (err, kt) => {
@@ -152,6 +151,4 @@ KtSession.get("/get-kt-ratings/:ktId", async (req, res) => {
   });
 });
 
-=======
->>>>>>> 4e609bd8798475d573f8e0b9660b64b5d35fbb58
 module.exports = KtSession;
