@@ -14,13 +14,19 @@ departmentRoutes.route("/departments").get(function (req, res) {
 //---------------------------------------------------------------------------------------------
 // Define a route for showing all departments
 departmentRoutes.route("/departments/showAllDepartments").get(function (req, res) {
-  Department.find({}, (err, departments) => {   // Find all departments in the database
-    if (err) {  // If there's an error, send an error response
-      res.send(err);
-    } else {  // If there are no errors, send the departments as a response
-      res.json(departments);
-    }
-  });
+  try {
+    Department.find({}, (err, departments) => {   // Find all departments in the database
+      if (err) {  // If there's an error, send an error response
+        res.send(err);
+      } else {  // If there are no errors, send the departments as a response
+        res.json(departments);
+      }
+    });
+  } catch(err){
+    console.log(err);
+    res.json({status:false, message:"Backend Error"});
+  }
+  
 });
 //----------------------------------------------------------------------------------------------
 // Define a route for checking if a department is available
