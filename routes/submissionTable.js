@@ -44,7 +44,6 @@ submissionTable.get("/getSubmissionTable", async (req, res) => {
             : datee === "03" || datee === "13"
             ? (datee = datee + "rd".sup())
             : (datee = datee + "th".sup());
-
           let hours = date?.getHours();
           const dayNight = hours < "13" || hours === "00" ? "AM" : "PM";
           hours < 13 ? (hours = hours) : (hours -= 12);

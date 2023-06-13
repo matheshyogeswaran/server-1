@@ -24,7 +24,6 @@ const QuizSubmission = new mongoose.Schema(
     score: { type: Number },
     correctAnsCount: { type: Number },
     attemptedTime: { type: String },
-
     submittedTime: { type: String },
     questions: [
       {
