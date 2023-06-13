@@ -1,12 +1,14 @@
 const express = require("express");
-const { trusted } = require("mongoose");
 const userRoutes = express.Router();
 const User = require("../models/user.model");
 const sendMail = require("../mail/mailer")
 // const UserRole = require("../models/userRole.model");
-userRoutes.use(require("../middleware/checkPermission"));
+const auth = require("../middleware/checkPermission")
+const ur = require("../userRoles/userRoles")
 
-userRoutes.route("/users/showAllUsers").get(function (req, res) {
+userRoutes.route("/users/showAllUsers").get(auth([ur.hiredEmployee, ur.contentCreator, ur.superAdmin]), function (req, res) {
+  console.log("Logged in user");
+  console.log(req.loggedInUser);
   User.find({})
     .populate({ path: "department", select: "depName createdBy" })
     .exec((err, users) => {
@@ -18,9 +20,55 @@ userRoutes.route("/users/showAllUsers").get(function (req, res) {
     });
 });
 
+
+userRoutes.route("/users/getLoggedinUserData/:userID").get(function (req, res) {
+  const userID = req.params.userID;
+  User.find({ _id: userID })
+    .populate({ path: "department", select: "depName createdBy Jobtitle" })
+    .exec((err, users) => {
+      if (err) {
+        res.send(err);
+      } else {
+        const jobTitleID = users[0].jobPosition;
+        let jobTitle;
+        if(users[0].jobPosition){
+          jobTitle = (users[0]?.department?.Jobtitle).find(item => item?._id.equals(users[0]?.jobPosition))?.jobTitlename
+        }else{
+          jobTitle = null;
+        }
+        let userData = users.map((e) => {
+          return (
+            {
+              userID: e?._id,
+              fname: e?.firstName,
+              lname: e?.lastName,
+              phone: e?.phoneNumber,
+              email: e?.emailAddress,
+              image: e?.userImage,
+              userRole: e?.userRole,
+              empId: e?.empId,
+              dob: e?.dob,
+              department: {
+                departmentID: e?.department?._id,
+                departmentName: e?.department?.depName
+              },
+              jobTitle: {
+                jobTitleID: jobTitleID,
+                jobTitle: jobTitle
+              },
+              submittedOn: e?.SubmittedOn,
+              verified: e?.verified,
+              acceptedChapters: e?.acceptedAdditionalChapter
+            }
+          )
+        })
+        res.json(userData);
+      }
+    });
+});
+
 userRoutes.route("/users/getAllUnverifiedUsers").get(function (req, res) {
-  // const selectedDepartmentName = departments.find(department => department._id === deptID)?.depName;
-  User.find({ verified: false, userRole: "Hired Employee" })
+  User.find({ verified: false })
     .populate({ path: "department", select: "depName createdBy Jobtitle" })
     .exec((err, users) => {
       if (err) {
@@ -35,6 +83,8 @@ userRoutes.route("/users/getAllUnverifiedUsers").get(function (req, res) {
               phone: e.phoneNumber,
               email: e.emailAddress,
               image: e.userImage,
+              userRole: e.userRole,
+              empId: e.empId,
               department: {
                 departmentID: e.department._id,
                 departmentName: e.department.depName

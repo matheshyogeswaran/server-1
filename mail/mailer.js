@@ -6,6 +6,9 @@ const transporter = nodemailer.createTransport({
     auth: {
         user: process.env.MAIL,
         pass: process.env.MAIL_PASSWORD
+    },
+    tls: {
+        rejectUnauthorized: false
     }
 });
 
@@ -21,7 +24,7 @@ async function sendMail(mailData) {
         const info = await transporter.sendMail(mailOptions);
         // console.log('Email sent: ' + info.response);
         return true;
-    } catch {
+    } catch (error) {
         console.log(error);
         return false;
     }

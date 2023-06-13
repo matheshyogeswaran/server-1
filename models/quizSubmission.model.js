@@ -8,7 +8,7 @@ const QuizSubmission = new mongoose.Schema(
     unitId:{type: String},
     userId: {type: String},
     score: { type: Number },
-     
+    correctAnsCount: { type: Number },
     attemptedTime: { type: String },
      
     submittedTime: { type: String },
@@ -20,6 +20,7 @@ const QuizSubmission = new mongoose.Schema(
         submittedAnswer: { type: Number },
       },
     ],
+    badgeGiven: { type: Boolean, default: false },
   },
   {
     collection: "quizsubmissions",

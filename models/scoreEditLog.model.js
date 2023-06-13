@@ -5,9 +5,10 @@ const ScoreEditLog = new mongoose.Schema(
     projectName: { type: String },
     submittedBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
     score: [{ type: Number }],
-    upgradedBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
+    feedback: [{ type: String }],
+    show: [{ type: Boolean }],
+    upgradedBy: [{ type: mongoose.Types.ObjectId, ref: "UserData" }],
     upgradedOn: [{ type: Date, default: Date.now() }],
-    upgradedBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
   },
   { collection: "scoreeditlog" }
 );
