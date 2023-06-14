@@ -1,39 +1,43 @@
 const express = require("express");
 const userRoutes = express.Router();
 const User = require("../models/user.model");
-const sendMail = require("../mail/mailer")
+const sendMail = require("../mail/mailer");
 // const UserRole = require("../models/userRole.model");
-const auth = require("../middleware/checkPermission")
-const ur = require("../userRoles/userRoles")
+const auth = require("../middleware/checkPermission");
+const ur = require("../userRoles/userRoles");
 
-userRoutes.route("/users/showAllUsers").get(auth([ur.hiredEmployee, ur.contentCreator, ur.superAdmin]), function (req, res) {
-  console.log("Logged in user");
-  console.log(req.loggedInUser);
-  User.find({})
-    .populate({ path: "department", select: "depName createdBy" })
-    .exec((err, users) => {
-      if (err) {
-        res.send(err);
-      } else {
-        res.json(users);
-      }
-    });
-});
+// userRoutes.route("/users/showAllUsers/systemadmin/:depid").get(auth([ur.systemAdmin]), function (req, res) {
+//   console.log("Logged in user");
+//   console.log(req.loggedInUser);
+//   User.find({department:req.params.depid})
+//     .populate({ path: "department", select: "depName createdBy" })
+//     .exec((err, users) => {
+//       if (err) {
+//         res.send(err);
+//       } else {
+//         res.json(users);
+//       }
+//     });
+// });
 
-userRoutes.route("/users/showAllUsers/systemadmin/:depid").get(auth([ur.systemAdmin]), function (req, res) {
-  console.log("Logged in user");
-  console.log(req.loggedInUser);
-  User.find({department:req.params.depid})
-    .populate({ path: "department", select: "depName createdBy" })
-    .exec((err, users) => {
-      if (err) {
-        res.send(err);
-      } else {
-        res.json(users);
-      }
-    });
-});
-
+userRoutes
+  .route("/users/showAllUsers")
+  .get(
+    auth([ur.hiredEmployee, ur.contentCreator, ur.superAdmin]),
+    function (req, res) {
+      console.log("Logged in user");
+      console.log(req.loggedInUser);
+      User.find({})
+        .populate({ path: "department", select: "depName createdBy" })
+        .exec((err, users) => {
+          if (err) {
+            res.send(err);
+          } else {
+            res.json(users);
+          }
+        });
+    }
+  );
 
 userRoutes.route("/users/getLoggedinUserData/:userID").get(function (req, res) {
   const userID = req.params.userID;
@@ -45,37 +49,37 @@ userRoutes.route("/users/getLoggedinUserData/:userID").get(function (req, res) {
       } else {
         const jobTitleID = users[0].jobPosition;
         let jobTitle;
-        if(users[0].jobPosition){
-          jobTitle = (users[0]?.department?.Jobtitle).find(item => item?._id.equals(users[0]?.jobPosition))?.jobTitlename
-        }else{
+        if (users[0].jobPosition) {
+          jobTitle = (users[0]?.department?.Jobtitle).find((item) =>
+            item?._id.equals(users[0]?.jobPosition)
+          )?.jobTitlename;
+        } else {
           jobTitle = null;
         }
         let userData = users.map((e) => {
-          return (
-            {
-              userID: e?._id,
-              fname: e?.firstName,
-              lname: e?.lastName,
-              phone: e?.phoneNumber,
-              email: e?.emailAddress,
-              image: e?.userImage,
-              userRole: e?.userRole,
-              empId: e?.empId,
-              dob: e?.dob,
-              department: {
-                departmentID: e?.department?._id,
-                departmentName: e?.department?.depName
-              },
-              jobTitle: {
-                jobTitleID: jobTitleID,
-                jobTitle: jobTitle
-              },
-              submittedOn: e?.SubmittedOn,
-              verified: e?.verified,
-              acceptedChapters: e?.acceptedAdditionalChapter
-            }
-          )
-        })
+          return {
+            userID: e?._id,
+            fname: e?.firstName,
+            lname: e?.lastName,
+            phone: e?.phoneNumber,
+            email: e?.emailAddress,
+            image: e?.userImage,
+            userRole: e?.userRole,
+            empId: e?.empId,
+            dob: e?.dob,
+            department: {
+              departmentID: e?.department?._id,
+              departmentName: e?.department?.depName,
+            },
+            jobTitle: {
+              jobTitleID: jobTitleID,
+              jobTitle: jobTitle,
+            },
+            submittedOn: e?.SubmittedOn,
+            verified: e?.verified,
+            acceptedChapters: e?.acceptedAdditionalChapter,
+          };
+        });
         res.json(userData);
       }
     });
@@ -89,29 +93,29 @@ userRoutes.route("/users/getAllUnverifiedUsers").get(function (req, res) {
         res.send(err);
       } else {
         let userData = users.map((e) => {
-          return (
-            {
-              userID: e._id,
-              fname: e.firstName,
-              lname: e.lastName,
-              phone: e.phoneNumber,
-              email: e.emailAddress,
-              image: e.userImage,
-              userRole: e.userRole,
-              empId: e.empId,
-              department: {
-                departmentID: e.department._id,
-                departmentName: e.department.depName
-              },
-              jobTitle: {
-                jobTitleID: e.jobPosition,
-                jobTitle: (e.department.Jobtitle).find(item => item._id.equals(e.jobPosition)).jobTitlename
-              },
-              submittedOn: e.SubmittedOn,
-              verified: e.verified
-            }
-          )
-        })
+          return {
+            userID: e._id,
+            fname: e.firstName,
+            lname: e.lastName,
+            phone: e.phoneNumber,
+            email: e.emailAddress,
+            image: e.userImage,
+            userRole: e.userRole,
+            empId: e.empId,
+            department: {
+              departmentID: e.department._id,
+              departmentName: e.department.depName,
+            },
+            jobTitle: {
+              jobTitleID: e.jobPosition,
+              jobTitle: e.department.Jobtitle.find((item) =>
+                item._id.equals(e.jobPosition)
+              ).jobTitlename,
+            },
+            submittedOn: e.SubmittedOn,
+            verified: e.verified,
+          };
+        });
         res.json(userData);
       }
     });
@@ -166,18 +170,16 @@ userRoutes.route("/users/isUserAvailable").post(async (req, res) => {
         if (users.verified === true) {
           res.json({ status: true });
         } else {
-          res.json(
-            {
-              name: users.firstName,
-              status: "pending",
-              message: `
+          res.json({
+            name: users.firstName,
+            status: "pending",
+            message: `
               Your Account is not Approved by Supervisor yet. 
               In case of emergency, Please contact 0112347889. 
               You will be notified via email when your account get approval.
               Thank you ~ NETS Team
-              `
-            }
-          );
+              `,
+          });
         }
       } else {
         res.json({ status: false });
@@ -191,18 +193,15 @@ userRoutes.route("/users/verifyuser").post(async (req, res) => {
   const userID = req.body.userid;
   const email = req.body.email;
   if (result === "allow") {
-    User.updateOne(
-      { _id: userID },
-      { $set: { verified: true } }
-    )
+    User.updateOne({ _id: userID }, { $set: { verified: true } })
       .then(async (result) => {
         // console.log(result)
         const mailOptions = {
           to: email,
-          subject: 'NETS | Profile Verification',
-          html: "Your Profile is verified successfully. You can Login to your NETS account"
+          subject: "NETS | Profile Verification",
+          html: "Your Profile is verified successfully. You can Login to your NETS account",
         };
-        const success = await sendMail(mailOptions)
+        const success = await sendMail(mailOptions);
         console.log(success);
         if (success) {
           console.log("Within if condition");
@@ -218,7 +217,6 @@ userRoutes.route("/users/verifyuser").post(async (req, res) => {
           });
           // return res.json({ "status": false })
         }
-
       })
       .catch((err) => {
         console.log(err);
@@ -231,9 +229,8 @@ userRoutes.route("/users/verifyuser").post(async (req, res) => {
     const deletedDocument = await User.findByIdAndDelete(userID);
     const mailOptions = {
       to: "ragurajsivanantham@gmail.com",
-      subject: 'NETS | Profile Verification',
-      html:
-        `<pre>
+      subject: "NETS | Profile Verification",
+      html: `<pre>
         Dear User,
         We regret to inform you that your profile has been denied due to the following reasons:
         
@@ -246,24 +243,23 @@ userRoutes.route("/users/verifyuser").post(async (req, res) => {
         
         Best regards,
         NETS Team
-      </pre > `
+      </pre > `,
     };
-    const success = await sendMail(mailOptions)
+    const success = await sendMail(mailOptions);
     // console.log(success);
     if (success) {
       return res.json({
         message: "User Deleted Successfully. Mail Sent !",
         status: true,
-        data: deletedDocument
+        data: deletedDocument,
       });
     } else {
       return res.json({
         message: "User Deleted Successfully. Mail Sent Failed !",
         status: true,
-        data: deletedDocument
+        data: deletedDocument,
       });
     }
-
   } else {
     return res.json({
       message: "Unknown Status",
