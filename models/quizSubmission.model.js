@@ -2,6 +2,10 @@ const mongoose = require("mongoose");
 
 const QuizSubmission = new mongoose.Schema(
   {
+    quizBelongsToDepartmet: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "DepartmentData",
+    },
     chapterId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "ChapterData",
@@ -19,8 +23,8 @@ const QuizSubmission = new mongoose.Schema(
     },
     score: { type: Number },
     correctAnsCount: { type: Number },
-    attemptedTime: { type: Date, default: Date.now() },
-    submittedTime: { type: Date, default: Date.now() },
+    attemptedTime: { type: String },
+    submittedTime: { type: String },
     questions: [
       {
         questionValue: { type: String },

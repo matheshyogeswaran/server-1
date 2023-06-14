@@ -2,12 +2,14 @@ const mongoose = require("mongoose");
 
 const KtSession = new mongoose.Schema(
   {
-    belongsToUnit: { type: mongoose.Schema.Types.ObjectId, ref: "UnitData" },
+    //belongsToUnit: { type: mongoose.Schema.Types.ObjectId, ref: "UnitData" },
+    belongsToUnit: { type: String },
     belongsToChapter: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "ChapterData",
     },
     sessionName: { type: String },
+    sessionUrl: { type: String },
     overallRating: { type: Number, default: 0 },
     overallQuality: { type: Number, default: 0 },
     overallComm: { type: Number, default: 0 },

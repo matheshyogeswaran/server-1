@@ -83,6 +83,7 @@ authenticationRoutes.route("/authentication/login").post(async (req, res) => {
 
 
 authenticationRoutes.route("/authentication/addFurtherDetails").post(async (req, res) => {
+  console.log("Authentication")
   const firstName = req.body.firstName;
   const lastName = req.body.lastName;
   const gender = req.body.gender;
@@ -96,11 +97,14 @@ authenticationRoutes.route("/authentication/addFurtherDetails").post(async (req,
   let verified = false;
   const usrCount = await User.find().lean();
   let userRole = "";
+  let message;
   if (usrCount.length === 0) {
-    userRole = "Super Admin"
+    userRole = "Super Admin";
     verified = true;
+    message = "You are promoted as Super Admin. Please login to continue";
   } else {
     userRole = "Hired Employee"
+    message = "You will be notified via email soon after verification process is complete, See You Soon !"
   }
 
   const user = new User({
@@ -108,8 +112,8 @@ authenticationRoutes.route("/authentication/addFurtherDetails").post(async (req,
     emailAddress, department, jobPosition, userRole, userImage, verified
   })
 
-  user.save()
-    .then(item => res.json({ message: "Further Details Added Successfully", status: "success" }))
+  user.save().then(item => res.json({ message: message, status: "success" }
+  ))
     .catch(err => {
       if (err.code === 11000) {
         return res.json({ message: 'User already exists', status: "duplicate" });

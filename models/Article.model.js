@@ -7,6 +7,7 @@ const Article = new mongoose.Schema(
     },
     articleName: { type: String },
     articleDesc: { type: String },
+    articleUrl: {type: String},
     overallRating: { type: Number, default: 0 },
     overallQuality: { type: Number, default: 0 },
     overallComm: { type: Number, default: 0 },

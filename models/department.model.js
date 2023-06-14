@@ -11,9 +11,12 @@ const Department = new mongoose.Schema(
         jobTitlename: { type: String },
         // createdBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
         createdOn: { type: Date, default: Date.now },
-        chaptersAllocated: [{ type: Schema.Types.ObjectId, ref: "ChapterData" }],
+        chaptersAllocated: [
+          { type: Schema.Types.ObjectId, ref: "ChapterData" },
+        ],
         reasons: [{ type: Object }],
-      },],
+      },
+    ],
 
     reasons: [{ type: Object }],
   },
