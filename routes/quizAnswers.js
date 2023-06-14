@@ -97,22 +97,22 @@ router.post('/:unitId/:userId/:chapterid/:depid', (req, res) => {
             pass: 'gnvhxwsbjqvnxprk'
           }
         });
-        
+
         var mailOptions = {
           from: 'nets.lambdauom@gmail.com',
           to: 'malikananayakkara69@gmail.com',
           subject: 'Quiz Submissions',
           text: notificationSentence
         };
-         
-        transporter.sendMail(mailOptions, function(error, info){
+
+        transporter.sendMail(mailOptions, function (error, info) {
           if (error) {
             console.log(error);
           } else {
             console.log('Email sent: ' + info.response);
           }
         });
-         
+
         return res.status(200).send('Quiz submission saved to database');
       });
     });
