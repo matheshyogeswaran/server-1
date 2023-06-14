@@ -63,6 +63,7 @@ userRoutes.route("/users/getLoggedinUserData/:userID").get(function (req, res) {
             },
             submittedOn: e?.SubmittedOn,
             verified: e?.verified,
+            acceptedChapters: e?.acceptedAdditionalChapter,
           };
         });
         res.json(userData);

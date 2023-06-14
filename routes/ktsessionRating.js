@@ -151,4 +151,76 @@ KtSession.get("/get-kt-ratings/:ktId", async (req, res) => {
   });
 });
 
+KtSession.route("/save-kt-ratings/:ktId").post(async (req, res) => {
+  try {
+    const ktId = req.params.ktId;
+    console.log(ktId);
+    const session = await KtSessions.findById(ktId);
+    console.log(session);
+
+    session.ratings.push(req.body);
+    session.save();
+
+    const newKT = await KtSessions.findById(ktId).lean();
+    let qualityRateSum = 0;
+    let commRateSum = 0;
+    let clarityRateSum = 0;
+    let knowledgeAndSkillRateSum = 0;
+
+    let overallQualityRate = 0;
+    let overallCommRate = 0;
+    let overallClarityRate = 0;
+    let overallKnowledgeAndSkillRate = 0;
+    let overallRate = 0;
+
+    let ratingCount = newKT.ratings.length;
+
+    console.log(newKT);
+
+    newKT.ratings.forEach((rating) => {
+      qualityRateSum += rating.qualityRate;
+      commRateSum += rating.commRate;
+      clarityRateSum += rating.clarityRate;
+      knowledgeAndSkillRateSum += rating.knowledgeAndSkillRate;
+    });
+
+    console.log(qualityRateSum);
+
+    overallQualityRate = Math.floor(qualityRateSum / ratingCount);
+    overallCommRate = Math.floor(commRateSum / ratingCount);
+    overallClarityRate = Math.floor(clarityRateSum / ratingCount);
+    overallKnowledgeAndSkillRate = Math.floor(
+      knowledgeAndSkillRateSum / ratingCount
+    );
+
+    console.log(overallKnowledgeAndSkillRate);
+
+    overallRate = Math.floor(
+      (qualityRateSum +
+        commRateSum +
+        clarityRateSum +
+        knowledgeAndSkillRateSum) /
+        (ratingCount * 4)
+    );
+
+    console.log(overallRate);
+
+    const updateKT = await KtSessions.findByIdAndUpdate(ktId, {
+      overallRating: overallRate,
+      overallQuality: overallQualityRate,
+      overallComm: overallCommRate,
+      overallClarity: overallClarityRate,
+      overallKnowledgeAndSkill: overallKnowledgeAndSkillRate,
+    });
+
+    console.log(updateKT);
+
+    res.status(200).json({
+      message: "Your request is successful",
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 module.exports = KtSession;

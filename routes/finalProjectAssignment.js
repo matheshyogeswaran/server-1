@@ -125,7 +125,6 @@ assignmentRoute.route("/addFinalAssignment")
                         status: false,
                     });
                 }
-
                 let updateObject;
                 if (req?.file) {
                     updateObject = {
@@ -172,40 +171,42 @@ assignmentRoute.route("/addFinalProjectSubmission")
         findMulterError(),
         (req, res) => {
             try {
-                if (req?.file) {
-                    const finalProjectAssignmentID = req.body.subid;
-                    // data to be saved to the database
-                    const uploadedDescriptionByEmployee = req.body.note;
-                    let uploadedFileByEmployee = "http://localhost:1337/download/submissions/" + req.file.filename;
-                    const empAttachOriginalName = req.file.originalname;
-                    const empAttachFileSize = req.file.size;
-                    const submittedDate = Date.now();
-
-                    FinalProjectAssignment.updateOne(
-                        { _id: finalProjectAssignmentID },
-                        {
-                            $set:
-                            {
-                                uploadedDescriptionByEmployee: uploadedDescriptionByEmployee,
-                                uploadedFileByEmployee: uploadedFileByEmployee,
-                                empAttachOriginalName: empAttachOriginalName,
-                                empAttachFileSize: empAttachFileSize,
-                                submittedDate: submittedDate,
-                                isProjectSubmitted: true
-                            }
-                        },
-                        function (err, result) {
-                            if (!err) {
-                                res.json({ status: true, message: "Final Project Assigned Successfully" });
-                            } else {
-                                res.json({ status: false, message: "Error in Submission" });
-                            }
-                        }
-                    );
-
-                } else {
-                    return res.json({ status: false, message: "Unsupported File Format" });
+                if (!mongoose.Types.ObjectId.isValid(req.body.finalProjectAssignmentID)) {
+                    return res.json({
+                        message: "Invalid ID Found",
+                        status: false,
+                    });
                 }
+                let updateObject;
+                if (req?.file) {
+                    console.log("File Found")
+                    updateObject = {
+                        uploadedDescriptionByEmployee: req.body.note,
+                        uploadedFileByEmployee: "http://localhost:1337/download/submissions/" + req.file.filename,
+                        empAttachOriginalName: req.file.originalname,
+                        empAttachFileSize: req.file.size,
+                        submittedDate: Date.now(),
+                        isProjectSubmitted: true
+                    }
+                } else {
+                    console.log("File not found")
+                    updateObject = {
+                        uploadedDescriptionByEmployee: req.body.note,
+                        submittedDate: Date.now(),
+                        isProjectSubmitted: true
+                    }
+                }
+                FinalProjectAssignment.updateOne(
+                    { _id: req.body.finalProjectAssignmentID },
+                    { $set: updateObject },
+                    function (err, result) {
+                        if (!err) {
+                            res.json({ status: true, message: "Final Project Assigned Successfully" });
+                        } else {
+                            res.json({ status: false, message: "Error in Submission" });
+                        }
+                    }
+                );
             } catch (err) {
                 console.log(err);
                 res.json({ status: false, message: "Backend Error" });

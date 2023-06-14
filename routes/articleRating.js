@@ -144,6 +144,17 @@ Article.get("/articleRatings/:empId", async (req, res) => {
   }
 });
 
+Article.get("/get-article-ratings/:articleId", async (req, res) => {
+  const articleId = req.params.articleId;
+  Articles.findById(articleId, (err, arti) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).json(arti.overallRating);
+    }
+  });
+});
+
 Article.route("/save-article-ratings/:articleId").post(async (req, res) => {
   try {
     const articleId = req.params.articleId;
