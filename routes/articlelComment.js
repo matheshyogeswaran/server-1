@@ -1,8 +1,8 @@
 const express = require("express");
 const articleCommentRoutes = express.Router();
-const articleComment = require("../models/article.model");
+const articleComment = require("../models/Article.model");
 
-articleCommentRoutes.route("/get-all-articles").get(function(req, res) {
+articleCommentRoutes.route("/get-all-articles").get(function (req, res) {
   articleComment.find({}, (err, articles) => {
     if (err) {
       res.status(500).send(err);
@@ -14,15 +14,28 @@ articleCommentRoutes.route("/get-all-articles").get(function(req, res) {
 
 articleCommentRoutes
   .route("/get-article-comments-by-article-id/:artiId")
-  .get(function(req, res) {
+  .get(function (req, res) {
     const { artiId } = req.params;
-    articleComment.findById(artiId, (err, comments) => {
-      if (err) {
-        res.status(500).send(err);
-      } else {
-        res.status(200).json(comments);
-      }
-    });
+    articleComment
+      .findById(artiId)
+      .populate("comments.addedBy")
+      .populate("comments.replies.addedBy")
+      .exec((err, comment) => {
+        if (err) {
+          res.status(500).send(err);
+        } else {
+          const sortedComments = comment.comments.sort(
+            (a, b) => b.commentedOn - a.commentedOn
+          );
+
+          sortedComments.forEach((comment) => {
+            comment.replies.sort((a, b) => b.repliedOn - a.repliedOn);
+          });
+
+          comment.comments = sortedComments;
+          res.status(200).send(comment.comments);
+        }
+      });
   });
 
 articleCommentRoutes.route("/create-article").post(async (req, res) => {
