@@ -48,6 +48,7 @@ jobtitleRoutes.route("/jobtitles/addJobtitle").post(async (req, res) => {
   const depID = req.body.depID;
   // //const createdBy = "Name";
   const createdOn = Date.now();
+
   Department.findById(depID, (err, department) => {
     if (err) {
       console.log(err);
