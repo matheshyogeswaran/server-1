@@ -8,7 +8,7 @@ chapterRoutes.route("/chapters/loadAllocatedChapters/:depid/:jobid").get(functio
   const depid = req.params.depid;
   const jobid = req.params.jobid;
   Department.findById(depid)
-    .populate({path:'Jobtitle.chaptersAllocated', select:"_id chapterName"})
+    .populate({ path: 'Jobtitle.chaptersAllocated', select: "_id chapterName" })
     .exec((err, departments) => {
       if (err) {
         res.json({ status: false, message: "Database Error" });
@@ -26,8 +26,8 @@ chapterRoutes.route("/chapters/loadAllocatedChapters/:depid/:jobid").get(functio
 
 chapterRoutes.route("/chapters/loadAdditionalChapters/:uid").get(function (req, res) {
   const uid = req.params.uid;
-  User.findById(uid,{acceptedAdditionalChapter:1})
-    .populate({path: "acceptedAdditionalChapter", select: " _id chapterName"})
+  User.findById(uid, { acceptedAdditionalChapter: 1 })
+    .populate({ path: "acceptedAdditionalChapter", select: " _id chapterName" })
     .exec((err, users) => {
       if (err) {
         res.json({ status: false, message: "Database Error" });
@@ -67,7 +67,7 @@ chapterRoutes.route("/chapters/acceptRequest").post(function (req, res) {
             res.json(
               {
                 status: true,
-                message: "Chapter Request accepted successfully"
+                message: "Chapter Request handled successfully"
               },
             );
           }
@@ -161,11 +161,11 @@ chapterRoutes.route("/chapters/editChapter").post(async (req, res) => {
   reason = req.body.reason;
   editedId = req.body.editedId;
   fromName = req.body.fromName;
-  modifiedBy = req.body.modifiedBy
+  // modifiedBy = req.body.modifiedBy
   const newReasonObject = {
     reasonID: Math.floor(Date.now()) / 1000,
     reasonValue: reason,
-    modifiedBy: modifiedBy,
+    // modifiedBy: modifiedBy,
     fromName: fromName,
     toName: newName,
   };

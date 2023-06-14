@@ -72,6 +72,10 @@ departmentRoutes.route("/departments/addDepartment").post(async (req, res) => {
       res.status(500).send({ error: err });
     });
 });
+
+
+
+
 //--------------------------------------------------------------------------------------------
 // Define a route for editing a department
 departmentRoutes.route("/departments/editDepartment").post(async (req, res) => {

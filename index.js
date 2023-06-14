@@ -52,7 +52,7 @@ mongoose.set("strictQuery", false);
 // format
 
 
-const connUrl = "mongodb://127.0.0.1:27017/NETS";
+const connUrl = "mongodb://localhost:27017/NETS";
 
 mongoose
   .connect(connUrl, {

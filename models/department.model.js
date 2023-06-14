@@ -2,13 +2,14 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const Department = new mongoose.Schema(
   {
+    // depNo: { type: Number, required: true },
     depName: { type: String, unique: true },
     createdOn: { type: Date, default: Date.now },
-    createdBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
+    // createdBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
     Jobtitle: [
       {
         jobTitlename: { type: String },
-        createdBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
+        // createdBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
         createdOn: { type: Date, default: Date.now },
         chaptersAllocated: [{ type: Schema.Types.ObjectId, ref: "ChapterData" }],
         reasons: [{ type: Object }],

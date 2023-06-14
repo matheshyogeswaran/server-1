@@ -50,10 +50,10 @@ quizReport.get("/quizReport/:unitId", async (req, res) => {
         datee === "01" || datee === "11" || datee === "21"
           ? (datee = datee + "st".sup())
           : datee === "02" || datee === "22"
-          ? (datee = datee + "nd".sup())
-          : datee === "03" || datee === "13"
-          ? (datee = datee + "rd".sup())
-          : (datee = datee + "th".sup());
+            ? (datee = datee + "nd".sup())
+            : datee === "03" || datee === "13"
+              ? (datee = datee + "rd".sup())
+              : (datee = datee + "th".sup());
 
         let hours = date?.getHours();
         let dayNight = hours < 13 || hours === 00 ? "AM" : "PM";
@@ -93,10 +93,10 @@ quizReport.get("/quizReport/:unitId", async (req, res) => {
         datee === "01" || datee === "11" || datee === "21"
           ? (datee = datee + "st".sup())
           : datee === "02" || datee === "22"
-          ? (datee = datee + "nd".sup())
-          : datee === "03" || datee === "13"
-          ? (datee = datee + "rd".sup())
-          : (datee = datee + "th".sup());
+            ? (datee = datee + "nd".sup())
+            : datee === "03" || datee === "13"
+              ? (datee = datee + "rd".sup())
+              : (datee = datee + "th".sup());
 
         hours = date?.getHours();
         dayNight = hours < 13 || hours === 00 ? "AM" : "PM";

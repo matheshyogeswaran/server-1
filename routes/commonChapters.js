@@ -84,7 +84,6 @@ commonchapterRoutes.route("/commonchapters/editChapter").post(async (req, res) =
     const newReasonObject = {
         reasonID: Math.floor(Date.now()) / 1000,
         reasonValue: reason,
-        modifiedBy: modifiedBy,
         fromName: fromName,
         toName: newName,
     };
