@@ -4,6 +4,7 @@ const FinalProjectAssignment = new mongoose.Schema(
   {
     userId: { type: mongoose.Types.ObjectId, ref: "UserData" },
     requestedDate: { type: Date, default: Date.now() },
+    departmentId: { type: mongoose.Types.ObjectId, ref: "DepartmentData"},
 
     isProjectAssigned: { type: Boolean, default: false },
     isProjectSubmitted: { type: Boolean, default: false },

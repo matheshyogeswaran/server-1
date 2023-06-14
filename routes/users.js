@@ -20,6 +20,20 @@ userRoutes.route("/users/showAllUsers").get(auth([ur.hiredEmployee, ur.contentCr
     });
 });
 
+userRoutes.route("/users/showAllUsers/systemadmin/:depid").get(auth([ur.systemAdmin]), function (req, res) {
+  console.log("Logged in user");
+  console.log(req.loggedInUser);
+  User.find({department:req.params.depid})
+    .populate({ path: "department", select: "depName createdBy" })
+    .exec((err, users) => {
+      if (err) {
+        res.send(err);
+      } else {
+        res.json(users);
+      }
+    });
+});
+
 
 userRoutes.route("/users/getLoggedinUserData/:userID").get(function (req, res) {
   const userID = req.params.userID;
@@ -69,6 +83,43 @@ userRoutes.route("/users/getLoggedinUserData/:userID").get(function (req, res) {
 
 userRoutes.route("/users/getAllUnverifiedUsers").get(function (req, res) {
   User.find({ verified: false })
+    .populate({ path: "department", select: "depName createdBy Jobtitle" })
+    .exec((err, users) => {
+      if (err) {
+        res.send(err);
+      } else {
+        let userData = users.map((e) => {
+          return (
+            {
+              userID: e._id,
+              fname: e.firstName,
+              lname: e.lastName,
+              phone: e.phoneNumber,
+              email: e.emailAddress,
+              image: e.userImage,
+              userRole: e.userRole,
+              empId: e.empId,
+              department: {
+                departmentID: e.department._id,
+                departmentName: e.department.depName
+              },
+              jobTitle: {
+                jobTitleID: e.jobPosition,
+                jobTitle: (e.department.Jobtitle).find(item => item._id.equals(e.jobPosition)).jobTitlename
+              },
+              submittedOn: e.SubmittedOn,
+              verified: e.verified
+            }
+          )
+        })
+        res.json(userData);
+      }
+    });
+});
+
+userRoutes.route("/users/getAllUnverifiedUsersDepartment/:depID").get(function (req, res) {
+  const depID = req.params.depID;
+  User.find({ verified: false, department: depID})
     .populate({ path: "department", select: "depName createdBy Jobtitle" })
     .exec((err, users) => {
       if (err) {
@@ -220,45 +271,6 @@ userRoutes.route("/users/verifyuser").post(async (req, res) => {
     });
   }
 });
-
-
-// userRoutes.route("/users/verifyuser").post(async (req, res) => {
-//   const result = req.body.result;
-//   const userID = req.body.userid;
-//   if (result === "allow") {
-//     User.updateOne(
-//       { _id: userID },
-//       { $set: { verified: true } }
-//     )
-//       .then((result) => {
-//         console.log(result)
-//         return res.json({
-//           message: "User Verified Successfully. Mail Sent.",
-//           status: true,
-//         });
-//       })
-//       .catch((err) => {
-//         console.log(err);
-//         return res.json({
-//           message: "Error in Verifying the User Role",
-//           status: false,
-//         });
-//       });
-//   } else if (result === "deny") {
-//     const deletedDocument = await User.findByIdAndDelete(userID);
-//     return res.json({
-//       message: "User Deleted Successfully",
-//       status: true,
-//       data: deletedDocument
-//     });
-//   } else {
-//     return res.json({
-//       message: "Unknown Status",
-//       status: false,
-//     });
-//   }
-// });
-
 
 userRoutes.route("/users/isUserCollectionEmpty").get(async (req, res) => {
   try {
