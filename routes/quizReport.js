@@ -3,6 +3,7 @@ const quizReport = express.Router();
 
 const Users = require("../models/user.model");
 const QuizSubmissions = require("../models/quizSubmission.model");
+const Departments = require("../models/department.model");
 
 quizReport.get("/quizReport/:unitId", async (req, res) => {
   try {
@@ -56,7 +57,7 @@ quizReport.get("/quizReport/:unitId", async (req, res) => {
           : (datee = datee + "th".sup());
 
         let hours = date?.getHours();
-        let dayNight = hours < 13 || hours === 00 ? "AM" : "PM";
+        let dayNight = hours < 13 || hours === 0 ? "AM" : "PM";
         hours < 13 ? (hours = hours) : (hours -= 12);
         hours < 10 ? (hours = "0" + hours) : (hours = hours);
 
@@ -99,7 +100,7 @@ quizReport.get("/quizReport/:unitId", async (req, res) => {
           : (datee = datee + "th".sup());
 
         hours = date?.getHours();
-        dayNight = hours < 13 || hours === 00 ? "AM" : "PM";
+        dayNight = hours < 13 || hours === 0 ? "AM" : "PM";
         hours < 13 ? (hours = hours) : (hours -= 12);
         hours < 10 ? (hours = "0" + hours) : (hours = hours);
 
@@ -133,12 +134,16 @@ quizReport.get("/quizReport/:unitId", async (req, res) => {
         const sec = Math.floor((timeTaken % 60000) / 1000);
         timeTaken = hour + ":" + min + ":" + sec;
 
+        // Fetch user department details
+        const department = await Departments.findOne({ _id: user?.department });
+
         //assign all needed data of a specific submission in a object
         const data = {
           userId: sub?.userId,
           empId: user?.empId,
           userImage: user?.userImage,
           name,
+          department: department?.depName,
           attemptedTime: attemptedOn,
           submittedTime: submittedOn,
           score: sub.score,

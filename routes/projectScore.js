@@ -4,9 +4,13 @@ const projScore = express.Router();
 const ProjectSubmissions = require("../models/finalProjectAssignment.model");
 const Users = require("../models/user.model");
 
-projScore.get("/getProjScore", async (req, res) => {
+projScore.get("/getProjScore/:supervisorId", async (req, res) => {
   try {
-    const submission = await ProjectSubmissions.find();
+    const supervisorId = req.params.supervisorId;
+
+    const submission = await ProjectSubmissions.find({
+      acceptedBy: supervisorId,
+    });
     let scoreData = [];
     for (let sub of submission) {
       if (sub?.projectScore !== undefined) {

@@ -4,6 +4,7 @@ const Chapter = new mongoose.Schema(
   {
     chapterName: { type: String, required: true, unique: true },
     depID: { type: mongoose.Types.ObjectId, ref: "DepartmentData" },
+
     createdBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
     createdOn: { type: Date, default: Date.now },
     offeredInJobTitles: { type: String }, //array objectId from DepartmentData
