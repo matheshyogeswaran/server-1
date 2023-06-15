@@ -71,12 +71,12 @@ KtSession.get("/ktsessionRatings/:empId", async (req, res) => {
           data === 1
             ? count1++
             : data === 2
-              ? count2++
-              : data === 3
-                ? count3++
-                : data === 4
-                  ? count4++
-                  : count5++
+            ? count2++
+            : data === 3
+            ? count3++
+            : data === 4
+            ? count4++
+            : count5++
         );
         let totalCount = count1 + count2 + count3 + count4 + count5;
         overAllRatingData = [
@@ -135,6 +135,89 @@ KtSession.get("/ktsessionRatings/:empId", async (req, res) => {
       };
     }
     res.json(ktSessionRatingsData);
+  } catch (err) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+KtSession.get("/get-kt-ratings/:ktId", async (req, res) => {
+  const ktId = req.params.ktId;
+  KtSessions.findById(ktId, (err, kt) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).json(kt.overallRating);
+    }
+  });
+});
+
+KtSession.route("/save-kt-ratings/:ktId").post(async (req, res) => {
+  try {
+    const ktId = req.params.ktId;
+    console.log(ktId);
+    const session = await KtSessions.findById(ktId);
+    console.log(session);
+
+    session.ratings.push(req.body);
+    session.save();
+
+    const newKT = await KtSessions.findById(ktId).lean();
+    let qualityRateSum = 0;
+    let commRateSum = 0;
+    let clarityRateSum = 0;
+    let knowledgeAndSkillRateSum = 0;
+
+    let overallQualityRate = 0;
+    let overallCommRate = 0;
+    let overallClarityRate = 0;
+    let overallKnowledgeAndSkillRate = 0;
+    let overallRate = 0;
+
+    let ratingCount = newKT.ratings.length;
+
+    console.log(newKT);
+
+    newKT.ratings.forEach((rating) => {
+      qualityRateSum += rating.qualityRate;
+      commRateSum += rating.commRate;
+      clarityRateSum += rating.clarityRate;
+      knowledgeAndSkillRateSum += rating.knowledgeAndSkillRate;
+    });
+
+    console.log(qualityRateSum);
+
+    overallQualityRate = Math.floor(qualityRateSum / ratingCount);
+    overallCommRate = Math.floor(commRateSum / ratingCount);
+    overallClarityRate = Math.floor(clarityRateSum / ratingCount);
+    overallKnowledgeAndSkillRate = Math.floor(
+      knowledgeAndSkillRateSum / ratingCount
+    );
+
+    console.log(overallKnowledgeAndSkillRate);
+
+    overallRate = Math.floor(
+      (qualityRateSum +
+        commRateSum +
+        clarityRateSum +
+        knowledgeAndSkillRateSum) /
+        (ratingCount * 4)
+    );
+
+    console.log(overallRate);
+
+    const updateKT = await KtSessions.findByIdAndUpdate(ktId, {
+      overallRating: overallRate,
+      overallQuality: overallQualityRate,
+      overallComm: overallCommRate,
+      overallClarity: overallClarityRate,
+      overallKnowledgeAndSkill: overallKnowledgeAndSkillRate,
+    });
+
+    console.log(updateKT);
+
+    res.status(200).json({
+      message: "Your request is successful",
+    });
   } catch (err) {
     res.status(500).json({ error: "Internal server error" });
   }

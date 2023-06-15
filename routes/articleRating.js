@@ -1,7 +1,7 @@
 const express = require("express");
 const Article = express.Router();
 
-const Articles = require("../models/article.model");
+const Articles = require("../models/Article.model");
 const Users = require("../models/user.model");
 
 Article.get("/articleRatings/:empId", async (req, res) => {
@@ -139,6 +139,89 @@ Article.get("/articleRatings/:empId", async (req, res) => {
       };
     }
     res.json(articleRatingsData);
+  } catch (err) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+Article.get("/get-article-ratings/:articleId", async (req, res) => {
+  const articleId = req.params.articleId;
+  Articles.findById(articleId, (err, arti) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).json(arti.overallRating);
+    }
+  });
+});
+
+Article.route("/save-article-ratings/:articleId").post(async (req, res) => {
+  try {
+    const articleId = req.params.articleId;
+    console.log(articleId);
+    const article = await Articles.findById(articleId);
+    console.log(article);
+
+    article.ratings.push(req.body);
+    article.save();
+
+    const newArticle = await Articles.findById(articleId).lean();
+    let qualityRateSum = 0;
+    let commRateSum = 0;
+    let clarityRateSum = 0;
+    let knowledgeAndSkillRateSum = 0;
+
+    let overallQualityRate = 0;
+    let overallCommRate = 0;
+    let overallClarityRate = 0;
+    let overallKnowledgeAndSkillRate = 0;
+    let overallRate = 0;
+
+    let ratingCount = newArticle.ratings.length;
+
+    console.log(newArticle);
+
+    newArticle.ratings.forEach((rating) => {
+      qualityRateSum += rating.qualityRate;
+      commRateSum += rating.commRate;
+      clarityRateSum += rating.clarityRate;
+      knowledgeAndSkillRateSum += rating.knowledgeAndSkillRate;
+    });
+
+    console.log(qualityRateSum);
+
+    overallQualityRate = Math.floor(qualityRateSum / ratingCount);
+    overallCommRate = Math.floor(commRateSum / ratingCount);
+    overallClarityRate = Math.floor(clarityRateSum / ratingCount);
+    overallKnowledgeAndSkillRate = Math.floor(
+      knowledgeAndSkillRateSum / ratingCount
+    );
+
+    console.log(overallKnowledgeAndSkillRate);
+
+    overallRate = Math.floor(
+      (qualityRateSum +
+        commRateSum +
+        clarityRateSum +
+        knowledgeAndSkillRateSum) /
+        (ratingCount * 4)
+    );
+
+    console.log(overallRate);
+
+    const updateArticle = await Articles.findByIdAndUpdate(articleId, {
+      overallRating: overallRate,
+      overallQuality: overallQualityRate,
+      overallComm: overallCommRate,
+      overallClarity: overallClarityRate,
+      overallKnowledgeAndSkill: overallKnowledgeAndSkillRate,
+    });
+
+    console.log(updateArticle);
+
+    res.status(200).json({
+      message: "Your request is successful",
+    });
   } catch (err) {
     res.status(500).json({ error: "Internal server error" });
   }
