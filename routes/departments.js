@@ -1,6 +1,7 @@
 const express = require("express");
 const departmentRoutes = express.Router();
 const Department = require("../models/department.model");
+const User = require("../models/user.model")
 //----------------------------------------------------------------------------------------------
 departmentRoutes.route("/departments").get(function (req, res) {
   res.json([
@@ -22,11 +23,11 @@ departmentRoutes.route("/departments/showAllDepartments").get(function (req, res
         res.json(departments);
       }
     });
-  } catch(err){
+  } catch (err) {
     console.log(err);
-    res.json({status:false, message:"Backend Error"});
+    res.json({ status: false, message: "Backend Error" });
   }
-  
+
 });
 //----------------------------------------------------------------------------------------------
 // Define a route for checking if a department is available
@@ -123,23 +124,51 @@ departmentRoutes.route("/departments/editDepartment").post(async (req, res) => {
 
 });
 //-----------------------------------------------------------------------------------------------
-departmentRoutes
-  .route("/departments/deleteDepartment")
-  .post(async (req, res) => {
-    id = req.body.id;
-    try {
-      const deletedDepartment = await Department.deleteOne({ _id: id });
+
+departmentRoutes.route("/departments/deleteDepartment").post(async (req, res) => {
+  const id = req.body.id;
+
+  try {
+    // Check if any user is associated with the department
+    const userCount = await User.countDocuments({ department: id });
+    if (userCount > 0) {
       return res.json({
-        message: "Department Deleted Successfully",
-        status: true,
-      });
-    } catch (error) {
-      return res.json({
-        message: "Error...!",
+        message: "Cannot delete this department. Users are associated with it.",
         status: false,
       });
     }
-  });
+
+    // Delete the department
+    const deletedDepartment = await Department.deleteOne({ _id: id });
+    return res.json({
+      message: "Department Deleted Successfully",
+      status: true,
+    });
+  } catch (error) {
+    return res.json({
+      message: "Error...!",
+      status: false,
+    });
+  }
+});
+
+// departmentRoutes
+//   .route("/departments/deleteDepartment")
+//   .post(async (req, res) => {
+//     id = req.body.id;
+//     try {
+//       const deletedDepartment = await Department.deleteOne({ _id: id });
+//       return res.json({
+//         message: "Department Deleted Successfully",
+//         status: true,
+//       });
+//     } catch (error) {
+//       return res.json({
+//         message: "Error...!",
+//         status: false,
+//       });
+//     }
+//   });
 
 //--------------------------------------------------------------------------
 
