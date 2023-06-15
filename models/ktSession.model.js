@@ -2,8 +2,7 @@ const mongoose = require("mongoose");
 
 const KtSession = new mongoose.Schema(
   {
-    //belongsToUnit: { type: mongoose.Schema.Types.ObjectId, ref: "UnitData" },
-    belongsToUnit: { type: String },
+    belongsToUnit: { type: mongoose.Schema.Types.ObjectId, ref: "UnitData" },
     belongsToChapter: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "ChapterData",

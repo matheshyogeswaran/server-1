@@ -16,13 +16,26 @@ ktSessionCommentRoutes
   .route("/get-kt-comments-by-kt-id/:ktId")
   .get(function (req, res) {
     const { ktId } = req.params;
-    ktSessionComment.findById(ktId, (err, comments) => {
-      if (err) {
-        res.status(500).send(err);
-      } else {
-        res.status(200).json(comments);
-      }
-    });
+    ktSessionComment
+      .findById(ktId)
+      .populate("comments.addedBy")
+      .populate("comments.replies.addedBy")
+      .exec((err, comment) => {
+        if (err) {
+          res.status(500).send(err);
+        } else {
+          const sortedComments = comment.comments.sort(
+            (a, b) => b.commentedOn - a.commentedOn
+          );
+
+          sortedComments.forEach((comment) => {
+            comment.replies.sort((a, b) => b.repliedOn - a.repliedOn);
+          });
+
+          comment.comments = sortedComments;
+          res.status(200).send(comment.comments);
+        }
+      });
   });
 
 ktSessionCommentRoutes.route("/create-kt").post(async (req, res) => {
