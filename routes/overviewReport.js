@@ -4,6 +4,7 @@ const overviewReport = express.Router();
 const quizSubmissions = require("../models/quizSubmission.model");
 const users = require("../models/user.model");
 const Chapters = require("../models/chapter.model");
+const Department = require("../models/department.model");
 
 overviewReport.get("/overviewReport/:empId", async (req, res) => {
   try {
@@ -17,10 +18,20 @@ overviewReport.get("/overviewReport/:empId", async (req, res) => {
       let quizSubmissionsData = await quizSubmissions.find({
         chapterId: chap?._id,
       });
+      const department = await Department?.findOne({ _id: chap?.depID });
+      if (!department) {
+        return res.status(404).json({ error: "User not found" });
+      }
       for (const quizSub of quizSubmissionsData) {
         // Retrieve the user object that matches the quiz submission user ID
         let user = await users.findOne({ _id: quizSub.userId });
         if (!user) {
+          return res.status(404).json({ error: "User not found" });
+        }
+        const UserDepartment = await Department?.findOne({
+          _id: user?.department,
+        });
+        if (!UserDepartment) {
           return res.status(404).json({ error: "User not found" });
         }
         if (user?.empId === reqEmpId) {
@@ -32,6 +43,7 @@ overviewReport.get("/overviewReport/:empId", async (req, res) => {
           userData = {
             empId: user?.empId,
             userImage: user?.userImage,
+            userDepartment: UserDepartment?.depName,
             empName: user?.firstName + " " + user?.lastName,
           };
         }
@@ -40,6 +52,7 @@ overviewReport.get("/overviewReport/:empId", async (req, res) => {
         score,
         unitCount,
         chapterName: chap.chapterName,
+        depName: department?.depName,
         average: unitCount === 0 ? 0 : score / unitCount,
       };
       //if he did any quiz in that particular chapter push into the overviewResult array

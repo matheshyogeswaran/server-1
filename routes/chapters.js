@@ -4,6 +4,17 @@ const Chapter = require("../models/chapter.model");  //import the chapter model
 const User = require("../models/user.model");
 const Department = require("../models/department.model");
 
+chapterRoutes.route("/chapters/departmentChapters/:depid/").get(function (req, res) {
+  const depid = req.params.depid;
+  Chapter.find({ depID: depid }, (err, chapters) => {
+    if (err) {
+      return res.json({ status: false, message: err })
+    } else {
+      return res.json(chapters);
+    }
+  })
+});
+
 chapterRoutes.route("/chapters/loadAllocatedChapters/:depid/:jobid").get(function (req, res) {
   const depid = req.params.depid;
   const jobid = req.params.jobid;
@@ -13,7 +24,6 @@ chapterRoutes.route("/chapters/loadAllocatedChapters/:depid/:jobid").get(functio
       if (err) {
         res.json({ status: false, message: "Database Error" });
       } else {
-        console.log("Hello ");
         const chapterList = departments.Jobtitle.find((chapter) => chapter._id == jobid);
         if (chapterList) {
           res.json(chapterList);
@@ -67,7 +77,7 @@ chapterRoutes.route("/chapters/acceptRequest").post(function (req, res) {
             res.json(
               {
                 status: true,
-                message: "Chapter Request handled successfully"
+                message: "Chapter Request Accepted successfully"
               },
             );
           }

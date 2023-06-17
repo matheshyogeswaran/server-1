@@ -94,8 +94,7 @@ router.post("/:unitId/:userId/:chapterid/:depid", (req, res) => {
             console.log("Email sent: " + info.response);
           }
         });
-
-        return res.status(200).send("Quiz submission saved to database");
+        return res.status(200).send('Quiz submission saved to database');
       });
     });
   });

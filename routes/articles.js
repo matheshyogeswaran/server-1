@@ -14,10 +14,8 @@ const ArticleData = require("../models/Article.model");
 
 Article.route("/").get(function (req, res) {
   const { chapterId } = req.query;
-
   // Filter the Articles based on the chapterId
   const query = chapterId ? { belongsToChapter: chapterId } : {};
-
   ArticleData.find(query, function (err, articles) {
     if (err) {
       console.log(err);
@@ -62,6 +60,18 @@ Article.route("/update/:id").post(function (req, res) {
       .catch((err) => {
         res.status(400).send("Update not possible");
       });
+  });
+});
+
+Article.route("/delete/:id").delete((req, res, next) => {
+  ArticleData.findByIdAndRemove(req.params.id, (error, data) => {
+    if (error) {
+      return next(error);
+    } else {
+      res.status(200).json({
+        msg: data,
+      });
+    }
   });
 });
 
