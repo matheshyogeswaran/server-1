@@ -1,6 +1,7 @@
 const express = require("express");
 const jobtitleRoutes = express.Router();
 const Department = require("../models/department.model");
+const User = require("../models/user.model")
 
 //-----------------------------------------------------------------------------------------------
 jobtitleRoutes.route("/jobtitles").get(function (req, res) {
@@ -112,6 +113,15 @@ jobtitleRoutes.route("/jobtitles/deleteJobtitle").post(async (req, res) => {
   const id = req.body.id;
   try {
     const departments = await Department.findOne({ "Jobtitle._id": id });
+
+    // Check if any verified user is associated with the job title
+    const verifiedUserCount = await User.countDocuments({ verified: true, jobPosition: id });
+    if (verifiedUserCount > 0) {
+      return res.json({
+        message: "Cannot delete this Jobtitle.Users are associated with it.",
+        status: false,
+      });
+    }
     // Remove the job title from the Jobtitle array
     departments.Jobtitle = departments.Jobtitle.filter(
       (jobtitle) => jobtitle._id.toString() !== id
@@ -131,6 +141,31 @@ jobtitleRoutes.route("/jobtitles/deleteJobtitle").post(async (req, res) => {
     });
   }
 })
+
+
+// jobtitleRoutes.route("/jobtitles/deleteJobtitle").post(async (req, res) => {
+//   const id = req.body.id;
+//   try {
+//     const departments = await Department.findOne({ "Jobtitle._id": id });
+//     // Remove the job title from the Jobtitle array
+//     departments.Jobtitle = departments.Jobtitle.filter(
+//       (jobtitle) => jobtitle._id.toString() !== id
+//     );
+//     // Save the updated Department object
+//     await departments.save();
+
+//     return res.json({
+//       message: "Jobtitle deleted successfully",
+//       status: true,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     return res.json({
+//       message: "Error deleting jobtitle",
+//       status: false,
+//     });
+//   }
+// })
 //----------------------------------------------------------------------------------------------
 jobtitleRoutes.route("/jobtitles/allocatechapter").post(async (req, res) => {
   chaptersAllocated = req.body.chaptersAllocated;

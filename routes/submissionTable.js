@@ -4,10 +4,13 @@ const submissionTable = express.Router();
 const Users = require("../models/user.model");
 const FinalProjectAssignments = require("../models/finalProjectAssignment.model");
 
-submissionTable.get("/getSubmissionTable", async (req, res) => {
+submissionTable.get("/getSubmissionTable/:supervisorId", async (req, res) => {
   try {
+    const supervisorId = req.params.supervisorId;
+
     let finalProjectAssignment = await FinalProjectAssignments.find({
       isProjectSubmitted: true,
+      acceptedBy: supervisorId,
     });
     let finalProjData = [];
     for (let finalProjAssign of finalProjectAssignment) {

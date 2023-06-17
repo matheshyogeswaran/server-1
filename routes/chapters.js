@@ -24,7 +24,6 @@ chapterRoutes.route("/chapters/loadAllocatedChapters/:depid/:jobid").get(functio
       if (err) {
         res.json({ status: false, message: "Database Error" });
       } else {
-        console.log("Hello ");
         const chapterList = departments.Jobtitle.find((chapter) => chapter._id == jobid);
         if (chapterList) {
           res.json(chapterList);
@@ -78,7 +77,7 @@ chapterRoutes.route("/chapters/acceptRequest").post(function (req, res) {
             res.json(
               {
                 status: true,
-                message: "Chapter Request handled successfully"
+                message: "Chapter Request Accepted successfully"
               },
             );
           }
