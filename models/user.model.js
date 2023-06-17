@@ -14,11 +14,15 @@ const User = new mongoose.Schema(
     userStatus: { type: String, default: "active" },
     userImage: { type: String },
     department: { type: mongoose.Schema.Types.ObjectId, ref: "DepartmentData" },
-    jobPosition: { type: mongoose.Schema.Types.ObjectId, ref: "DepartmentData",},
+    jobPosition: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "DepartmentData",
+    },
     badges: [{ badgeValue: { type: String }, earnedOn: { type: Date } }],
-    earnedScoresByQuiz: { numOfQuizzesDone: { type: Number }, totalScoresEarned: { type: Number },},
     isProjectRequested: { type: Boolean, default: false },
-    acceptedAdditionalChapter: [{ type: mongoose.Schema.Types.ObjectId, ref: "ChapterData" }],
+    acceptedAdditionalChapter: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "ChapterData" },
+    ],
   },
   {
     collection: "users",
