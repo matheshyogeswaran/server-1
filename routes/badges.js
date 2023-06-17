@@ -3,61 +3,58 @@ const badges = express.Router();
 
 const Users = require("../models/user.model");
 const QuizSubmissions = require("../models/quizSubmission.model");
+const Departments = require("../models/department.model");
+const Chapters = require("../models/chapter.model");
 
 badges.post("/storeBadge", async (req, res) => {
   try {
-    // calculating the rank of the user
-    let quizSubmissions = await QuizSubmissions.find();
-    let users = await Users.find();
-    let leaderboardData = [];
+    // Get the current user ID from the request parameters
+    const currentUserDep = req.body?.department;
 
-    // calcluating total score and num of quiz submissions
-    for (let user of users) {
+    // // Retrieve all quiz submissions and users from the database
+    let leaderboard = [];
+    // get users from specific department
+    const usersData = await Users.find({ department: currentUserDep });
+    for (const user of usersData) {
       let totalScore = 0;
       let count = 0;
-      for (let quizSub of quizSubmissions) {
-        if (user._id.toString() === quizSub.userId.toString()) {
-          totalScore += quizSub.score;
-          count++;
-        }
-      }
-      //calcluating average score
-      const averageScore = totalScore / count;
-      //storing empId and average score
-      let lbData = {
-        empId: user.empId,
-        averageScore,
-      };
-      // if quiz is submitted by current user push his average score in an array
-      const userExist = await QuizSubmissions.find({ userId: user?._id });
-      if (userExist?.length > 0) {
-        leaderboardData.push(lbData);
-      }
-    }
-    //sorting the array to get the rank
-    leaderboardData.sort((a, b) => b?.averageScore - a?.averageScore);
-
-    let finalLeaderboardData = [];
-
-    //get the first rank user
-    const userUserRole = await Users.findOne({
-      empId: leaderboardData?.[0]?.empId,
-    });
-
-    finalLeaderboardData = [];
-    for (let lbdata of leaderboardData) {
-      for (let user of users) {
-        if (lbdata?.empId === user?.empId) {
-          // if user role is hiredEmployee
-          if (
-            user.userRoleId.toString() === userUserRole?.userRoleId.toString()
-          ) {
-            finalLeaderboardData.push(lbdata);
+      // get chapters from specific department
+      const chaptersData = await Chapters.find({ depID: currentUserDep });
+      for (const chapters of chaptersData) {
+        for (const units of chapters?.unitsOffer) {
+          // get submissions from specific unit and user
+          const quizSubmissionsData = await QuizSubmissions.find({
+            unitId: units,
+            userId: user?._id,
+          });
+          for (const quizSubmissions of quizSubmissionsData) {
+            totalScore += quizSubmissions?.score;
+            count++;
           }
         }
       }
-    }
 
+      let averageScore = totalScore / count;
+      if (!isNaN(averageScore)) {
+        let lbData = {
+          empId: user?.empId,
+          averageScore,
+          rank: 0,
+        };
+        leaderboard.push(lbData);
+        leaderboard.sort((a, b) => b.averageScore - a.averageScore);
+      }
+    }
+    let rank = 1;
+    for (let i = 0; i < leaderboard.length; i++) {
+      if (
+        i > 0 && //always first index of leaderboard person should be rank 1
+        leaderboard[i].averageScore !== leaderboard[i - 1].averageScore
+      ) {
+        rank = i + 1;
+      }
+      leaderboard[i].rank = rank;
+    }
     //badge giving
     const currentUser = req.body?.currentUser;
     const unitId = req.body?.unitId;
@@ -74,18 +71,15 @@ badges.post("/storeBadge", async (req, res) => {
       throw new Error("Unit not found");
     }
     //find the index of the user
-    let rank = finalLeaderboardData.findIndex(
-      (data) => data?.empId === userEmpId?.empId
+    let currentUserRank = 0;
+    const { empId } = await Users.findOne({ _id: currentUser });
+    leaderboard.findIndex(
+      (emp) => emp?.empId === empId && (currentUserRank = emp?.rank)
     );
-
-    if (rank === -1) {
-      throw new Error("User is not in the leaderboard");
-    }
-
     if (quizSubmission?.badgeGiven === false) {
       // if rank is less than 4
-      switch (rank) {
-        case 0:
+      switch (currentUserRank) {
+        case 1:
           //update badgeGiven field in the quizSubmission collection
           await QuizSubmissions.updateOne(
             { userId: currentUser, unitId: unitId },
@@ -105,7 +99,14 @@ badges.post("/storeBadge", async (req, res) => {
             }
           });
           break;
-        case 1:
+        case 2:
+          //update badgeGiven field in the quizSubmission collection
+          await QuizSubmissions.updateOne(
+            { userId: currentUser, unitId: unitId },
+            { badgeGiven: true },
+            { new: true }
+          );
+          //update badges array field in the user collection
           userEmpId?.badges.push({
             badgeValue: "Silver",
             earnedOn: Date.now(),
@@ -118,7 +119,14 @@ badges.post("/storeBadge", async (req, res) => {
             }
           });
           break;
-        case 2:
+        case 3:
+          //update badgeGiven field in the quizSubmission collection
+          await QuizSubmissions.updateOne(
+            { userId: currentUser, unitId: unitId },
+            { badgeGiven: true },
+            { new: true }
+          );
+          //update badges array field in the user collection
           userEmpId?.badges?.push({
             badgeValue: "Bronze",
             earnedOn: Date.now(),
