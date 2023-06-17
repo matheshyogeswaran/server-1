@@ -8,7 +8,7 @@ const User = new mongoose.Schema(
     gender: { type: String, required: true },
     dob: { type: Date, required: true },
     phoneNumber: { type: Number, required: true },
-    SubmittedOn: { type: String, default: Date.now }, //Date
+    SubmittedOn: { type: Date, default: Date.now() }, //Date
     emailAddress: { type: String, required: true, unique: true },
     verified: { type: Boolean, default: false },
     userStatus: { type: String, default: "active" },

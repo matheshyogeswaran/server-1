@@ -3,6 +3,17 @@ const departmentRoutes = express.Router();
 const Department = require("../models/department.model");
 const User = require("../models/user.model")
 //----------------------------------------------------------------------------------------------
+departmentRoutes.route("/getContentCreators/:depid").get(function (req, res) {
+  const depID = req.params.depid;
+  User.find({ department: depID, userRole: "Content Creator" }, {}, (err, users) => {
+    if (err) {
+      console.log(err);
+      return res.json({ "message": "error" });
+    }
+    return res.json(users);
+  })
+});
+//---------------------------------------------------------------------------------------------
 departmentRoutes.route("/departments").get(function (req, res) {
   res.json([
     {

@@ -23,13 +23,70 @@ forumRoutes
       .populate("createdBy")
       .populate("posts.createdBy")
       .populate("posts.replies.createdBy")
-      .exec((err, tickets) => {
+      .exec((err, forum) => {
         if (err) {
           res.status(500).send(err);
         } else {
-          res.status(200).send([tickets]);
+          const sortedPosts = forum.posts.sort(
+            (a, b) => b.createdOn - a.createdOn
+          );
+
+          sortedPosts.forEach((post) => {
+            post.replies.sort((a, b) => b.createdOn - a.createdOn);
+          });
+
+          forum.posts = sortedPosts;
+          res.status(200).send([forum]);
         }
       });
+  });
+
+forumRoutes
+  .route("/get-post-details-by-post-id/:forumId/:postId")
+  .get(async (req, res) => {
+    try {
+      const { forumId, postId } = req.params;
+
+      const forum = await Forum.findById(forumId);
+      if (!forum) {
+        return res.status(500).send(err);
+      }
+
+      const post = forum.posts.id(postId);
+      if (!post) {
+        return res.status(500).send(err);
+      }
+      res.status(200).send([post]);
+    } catch (err) {
+      res.status(500).send(err);
+    }
+  });
+
+forumRoutes
+  .route("/get-reply-details-by-reply-id/:forumId/:postId/:replyId")
+  .get(async (req, res) => {
+    try {
+      const { forumId, postId, replyId } = req.params;
+
+      const forum = await Forum.findById(forumId);
+      if (!forum) {
+        return res.status(500).send(err);
+      }
+
+      const post = forum.posts.id(postId);
+      if (!post) {
+        return res.status(500).send(err);
+      }
+
+      const reply = post.replies.id(replyId);
+      if (!reply) {
+        return res.status(500).send(err);
+      }
+      res.status(200).send([reply]);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send(err);
+    }
   });
 
 forumRoutes.route("/edit-forum/:id").put(function (req, res) {

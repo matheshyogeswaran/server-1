@@ -16,42 +16,64 @@ ticketRoutes
   .route("/get-tickets-by-requested-user-id/:userId")
   .get(function (req, res) {
     const { userId } = req.params;
-    console.log(userId);
-    GuidanceTicket.find({ requestedBy: userId }, (err, tickets) => {
-      if (err) {
-        res.status(500).send(err);
-      } else {
-        res.status(200).json(tickets);
-      }
-    });
+    GuidanceTicket.find({ requestedBy: userId })
+      .populate("assignedTo")
+      .populate("directedDepartmentID")
+      .exec((err, tickets) => {
+        if (err) {
+          res.status(500).send(err);
+        } else {
+          const sortedTickets = tickets.sort(
+            (a, b) => b.createdTime - a.createdTime
+          );
+
+          tickets = sortedTickets;
+
+          res.status(200).send(tickets);
+        }
+      });
   });
 
 ticketRoutes
   .route("/get-tickets-by-directed-department-id/:deptId")
   .get(function (req, res) {
     const { deptId } = req.params;
-    console.log(deptId);
-    GuidanceTicket.find({ directedDepartmentID: deptId }, (err, tickets) => {
-      if (err) {
-        res.status(500).send(err);
-      } else {
-        res.status(200).json(tickets);
-      }
-    });
+    GuidanceTicket.find({ directedDepartmentID: deptId })
+      .populate("requestedBy")
+      .populate("assignedTo")
+      .exec((err, tickets) => {
+        if (err) {
+          res.status(500).send(err);
+        } else {
+          const sortedTickets = tickets.sort(
+            (a, b) => b.createdTime - a.createdTime
+          );
+
+          tickets = sortedTickets;
+          res.status(200).send(tickets);
+        }
+      });
   });
 
 ticketRoutes
   .route("/get-tickets-by-assigned-user-id/:userId")
   .get(function (req, res) {
     const { userId } = req.params;
-    console.log(userId);
-    GuidanceTicket.find({ assignedTo: userId }, (err, tickets) => {
-      if (err) {
-        res.status(500).send(err);
-      } else {
-        res.status(200).json(tickets);
-      }
-    });
+    GuidanceTicket.find({ assignedTo: userId })
+      .populate("requestedBy")
+      .exec((err, tickets) => {
+        if (err) {
+          res.status(500).send(err);
+        } else {
+          const sortedTickets = tickets.sort(
+            (a, b) => b.createdTime - a.createdTime
+          );
+
+          tickets = sortedTickets;
+
+          res.status(200).send(tickets);
+        }
+      });
   });
 
 ticketRoutes

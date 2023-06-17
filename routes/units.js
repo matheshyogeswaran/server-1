@@ -1,6 +1,4 @@
- 
-
-const express = require("express");
+ const express = require("express");
 const Unit = express.Router();
 const UnitData = require('../models/unit.model');
 
@@ -45,6 +43,7 @@ Unit.route('/add').post(function(req, res) {
             res.status(200).json({'units': 'unit added successfully'});
         })
         .catch(err => {
+          console.log(err);
             res.status(400).send('adding new unit failed');
         });
 });
