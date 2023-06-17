@@ -55,7 +55,6 @@ departmentRoutes
 departmentRoutes.route("/departments/addDepartment").post(async (req, res) => {
   const depName = req.body.departmentName;
   const createdOn = Date.now();
-  console.log(depName);
   const departmentDetails = new Department({    // Create a new department object
     depName,
     createdOn,
@@ -75,7 +74,7 @@ departmentRoutes.route("/departments/addDepartment").post(async (req, res) => {
           status: false,
         });
       }
-      console.log(err)
+      // console.log(err)
       res.status(500).send({ error: err });
     });
 });
@@ -151,24 +150,6 @@ departmentRoutes.route("/departments/deleteDepartment").post(async (req, res) =>
     });
   }
 });
-
-// departmentRoutes
-//   .route("/departments/deleteDepartment")
-//   .post(async (req, res) => {
-//     id = req.body.id;
-//     try {
-//       const deletedDepartment = await Department.deleteOne({ _id: id });
-//       return res.json({
-//         message: "Department Deleted Successfully",
-//         status: true,
-//       });
-//     } catch (error) {
-//       return res.json({
-//         message: "Error...!",
-//         status: false,
-//       });
-//     }
-//   });
 
 //--------------------------------------------------------------------------
 
