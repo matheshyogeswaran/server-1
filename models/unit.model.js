@@ -2,28 +2,28 @@ const mongoose = require("mongoose");
 
 const Unit = new mongoose.Schema(
   {
-         
+
     belongsToChapter: { type: mongoose.Types.ObjectId, ref: "ChapterData" },
     unitName: { type: String },
     unitDesc: { type: String },
     createdBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
     createdOn: { type: Date, default: Date.now },
     status: { type: String, default: "active" },
-    quiz: {      
-      _id: {          
+    quiz: {
+      _id: {
         type: mongoose.Schema.Types.ObjectId,
-        auto: true,     
+        auto: true,
       },
       quizName: {
-        type: String,     
+        type: String,
       },
       quizDesc: {
-          type: String,   
-        },
+        type: String,
+      },
       timeLimit: {
-          type: Number,
-          // required: true
-        },
+        type: Number,
+        // required: true
+      },
       questions: [
         {
           _id: {
@@ -32,7 +32,7 @@ const Unit = new mongoose.Schema(
             unique: true,
           },
           question: {
-            type: String,   
+            type: String,
           },
           options: [
             {
@@ -40,7 +40,7 @@ const Unit = new mongoose.Schema(
             }
           ],
           correctAnswer: {
-            type: Number,   
+            type: Number,
           },
           createdBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
           createdOn: { type: Date, default: Date.now },

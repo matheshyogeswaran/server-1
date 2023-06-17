@@ -4,6 +4,17 @@ const Chapter = require("../models/chapter.model");  //import the chapter model
 const User = require("../models/user.model");
 const Department = require("../models/department.model");
 
+chapterRoutes.route("/chapters/departmentChapters/:depid/").get(function (req, res) {
+  const depid = req.params.depid;
+  Chapter.find({ depID: depid }, (err, chapters) => {
+    if (err) {
+      return res.json({ status: false, message: err })
+    } else {
+      return res.json(chapters);
+    }
+  })
+});
+
 chapterRoutes.route("/chapters/loadAllocatedChapters/:depid/:jobid").get(function (req, res) {
   const depid = req.params.depid;
   const jobid = req.params.jobid;
