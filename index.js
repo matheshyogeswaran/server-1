@@ -59,9 +59,8 @@ app.use(require("./routes/projectScore"));
 mongoose.set("strictQuery", false);
 // format
 
-// const connUrl = "mongodb://localhost:27017/NETS";
 // mongodb+srv://<username>:<password>@cluster0.mongodb.net/<database>?retryWrites=true&w=majority
-// const connUrl = "mongodb://127.0.0.1:27017/nets";
+const connUrl = "mongodb://127.0.0.1:27017/nets";
 // const connUrl = "mongodb://localhost:27017/NETS";
 // const connUrl =
 //   "mongodb+srv://heshani:heshani@cluster0.ck9bx.mongodb.net/test?retryWrites=true&w=majority";
