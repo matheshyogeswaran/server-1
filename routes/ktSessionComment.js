@@ -66,6 +66,7 @@ ktSessionCommentRoutes.route("/add-kt-comment/:ktId").post(async (req, res) => {
       message: "Your request is successful",
     });
   } catch (err) {
+    console.log(err);
     res
       .status(500)
       .json({ message: "Your request is unsuccessful", error: err });
