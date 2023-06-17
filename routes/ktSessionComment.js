@@ -1,6 +1,7 @@
 const express = require("express");
 const ktSessionCommentRoutes = express.Router();
 const ktSessionComment = require("../models/ktSession.model");
+const moment = require("moment");
 
 ktSessionCommentRoutes.route("/get-all-kt").get(function (req, res) {
   ktSessionComment.find({}, (err, kts) => {
@@ -25,11 +26,13 @@ ktSessionCommentRoutes
           res.status(500).send(err);
         } else {
           const sortedComments = comment.comments.sort(
-            (a, b) => b.commentedOn - a.commentedOn
+            (a, b) => new Date(b.commentedOn) - new Date(a.commentedOn)
           );
 
           sortedComments.forEach((comment) => {
-            comment.replies.sort((a, b) => b.repliedOn - a.repliedOn);
+            comment.replies.sort(
+              (a, b) => new Date(b.repliedOn) - new Date(a.repliedOn)
+            );
           });
 
           comment.comments = sortedComments;
@@ -58,8 +61,11 @@ ktSessionCommentRoutes.route("/add-kt-comment/:ktId").post(async (req, res) => {
   try {
     const ktId = req.params.ktId;
     const kt = await ktSessionComment.findById(ktId);
-
-    kt.comments.push(req.body);
+    let newComment = {
+      ...req.body,
+      commentedOn: moment().format("YYYY-MM-DD hh:mm:ss.SS A"),
+    };
+    kt.comments.push(newComment);
     kt.save();
 
     res.status(200).json({
@@ -80,7 +86,12 @@ ktSessionCommentRoutes
       const kt = await ktSessionComment.findById(ktId);
       const comment = kt.comments.id(comId);
 
-      comment.replies.push(req.body);
+      let newReply = {
+        ...req.body,
+        repliedOn: moment().format("YYYY-MM-DD hh:mm:ss.SS A"),
+      };
+
+      comment.replies.push(newReply);
       kt.save();
 
       res.status(200).json({

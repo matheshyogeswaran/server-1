@@ -1,6 +1,7 @@
 const express = require("express");
 const forumRoutes = express.Router();
 const Forum = require("../models/discussionForum.model");
+const moment = require("moment");
 
 forumRoutes.route("/get-forums-by-chapter/:chptId").get(function (req, res) {
   const { chptId } = req.params;
@@ -28,11 +29,13 @@ forumRoutes
           res.status(500).send(err);
         } else {
           const sortedPosts = forum.posts.sort(
-            (a, b) => b.createdOn - a.createdOn
+            (a, b) => new Date(b.createdOn) - new Date(a.createdOn)
           );
 
           sortedPosts.forEach((post) => {
-            post.replies.sort((a, b) => b.createdOn - a.createdOn);
+            post.replies.sort(
+              (a, b) => new Date(b.createdOn) - new Date(a.createdOn)
+            );
           });
 
           forum.posts = sortedPosts;
@@ -104,6 +107,10 @@ forumRoutes.route("/edit-forum/:id").put(function (req, res) {
 
 forumRoutes.route("/create-forum").post(async (req, res) => {
   const forum = new Forum(req.body);
+
+  // Format the updated_at date
+  forum.createdOn = moment().format("YYYY-MM-DD hh:mm:ss.SS A");
+
   forum
     .save()
     .then(() =>
@@ -123,7 +130,12 @@ forumRoutes.route("/add-posts/:forumId").post(async (req, res) => {
     const forumId = req.params.forumId;
     const forum = await Forum.findById(forumId);
 
-    forum.posts.push(req.body);
+    let newPost = {
+      ...req.body,
+      createdOn: moment().format("YYYY-MM-DD hh:mm:ss.SS A"),
+    };
+
+    forum.posts.push(newPost);
     forum.save();
 
     res.status(200).json({
@@ -142,7 +154,12 @@ forumRoutes.route("/add-replies/:forumId/:postId").post(async (req, res) => {
     const forum = await Forum.findById(forumId);
     const post = forum.posts.id(postId);
 
-    post.replies.push(req.body);
+    let newReply = {
+      ...req.body,
+      createdOn: moment().format("YYYY-MM-DD hh:mm:ss.SS A"),
+    };
+
+    post.replies.push(newReply);
     forum.save();
 
     res.status(200).json({
