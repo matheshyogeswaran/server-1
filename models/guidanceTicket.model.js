@@ -3,6 +3,7 @@ const GuidanceTicket = new mongoose.Schema(
   {
     requestedBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
     requestTitle: { type: String },
+    requestType: { type: String },
     description: { type: String },
     attachment: { type: String },
     createdTime: { type: Date, default: Date.now() },

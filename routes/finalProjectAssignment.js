@@ -33,8 +33,8 @@ const findMulterError = () => {
 
 // Routes Starts Here...
 
-assignmentRoute.route("/finalprojectassignment/getOneAssignment/:id").get(async (req, res) => {
-    const userID = req.params.id;
+assignmentRoute.route("/finalprojectassignment/getOneAssignment/:userid").get(async (req, res) => {
+    const userID = req.params.userid;
     const assignments = await FinalProjectAssignment.findOne({ userId: userID })
         .populate(
             {
@@ -45,8 +45,8 @@ assignmentRoute.route("/finalprojectassignment/getOneAssignment/:id").get(async 
     res.json([assignments]);
 });
 
-assignmentRoute.route("/finalprojectassignment/getOverDuedAssignments").get(async (req, res) => {
-    const overDuedAssignments = await FinalProjectAssignment.find({ projectDeadLine: { $lte: new Date().toISOString() } })
+assignmentRoute.route("/finalprojectassignment/getOverDuedAssignments/:depid").get(async (req, res) => {
+    const overDuedAssignments = await FinalProjectAssignment.find({ projectDeadLine: { $lte: new Date().toISOString() }, departmentId: req.params.depid })
         .populate(
             {
                 path: "acceptedBy",
@@ -81,8 +81,15 @@ assignmentRoute.route("/finalprojectassignment/getOneAssignmentByProjectID/:id")
     res.json([assignments]);
 });
 
-assignmentRoute.route("/finalprojectassignment/getAssigned").get(async (req, res) => {
-    const assignments = await FinalProjectAssignment.find({ isProjectAssigned: true, isProjectSubmitted: false })
+assignmentRoute.route("/finalprojectassignment/getAssigned/:depid").get(async (req, res) => {
+    const assignments = await FinalProjectAssignment.find(
+        {
+            isProjectAssigned: true,
+            isProjectSubmitted: false,
+            departmentId: req.params.depid,
+            projectDeadLine: { $gte: new Date().toISOString() }
+        }
+    )
         .populate(
             {
                 path: "acceptedBy",
@@ -113,110 +120,109 @@ assignmentRoute.route("/finalprojectassignment/isProjectAssigned/:id").get(async
 
 });
 
-assignmentRoute.route("/addFinalAssignment")
-    .post(
-        finalAssignmentAttachmentUpload.single("ufile"),
-        findMulterError(),
-        (req, res) => {
-            try {
-                if (!mongoose.Types.ObjectId.isValid(req.body.finalprojectassignmentid)) {
-                    return res.json({
-                        message: "Invalid ID Found",
-                        status: false,
-                    });
-                }
-                let updateObject;
-                if (req?.file) {
-                    updateObject = {
-                        projectName: req.body.title,
-                        projectDescription: req.body.description,
-                        projectDeadLine: req.body.deadline,
-                        uploadedFileBySupervisor: "http://localhost:1337/download/submission-attachments/" + req.file.filename,
-                        supAttachOriginalName: req.file.originalname,
-                        supAttachFileSize: req.file.size,
-                        acceptedBy: req.body.supervisor,
-                        isProjectAssigned: true,
-                        assignedOn: Date.now()
-                    }
-                } else {
-                    updateObject = {
-                        projectName: req.body.title,
-                        projectDescription: req.body.description,
-                        projectDeadLine: req.body.deadline,
-                        acceptedBy: req.body.supervisor,
-                        isProjectAssigned: true,
-                        assignedOn: Date.now()
-                    }
-                }
-                FinalProjectAssignment.updateOne(
-                    { _id: req.body.finalprojectassignmentid },
-                    { $set: updateObject },
-                    function (err, result) {
-                        if (!err) {
-                            res.json({ status: true, message: "Final Project Assigned Successfully" });
-                        } else {
-                            res.json({ status: false, message: "Error in Submission" });
-                        }
-                    }
-                );
-            } catch (err) {
-                console.log(err);
-                res.json({ status: false, message: "Backend Error" });
+assignmentRoute.route("/addFinalAssignment").post(
+    finalAssignmentAttachmentUpload.single("ufile"),
+    findMulterError(),
+    (req, res) => {
+        try {
+            if (!mongoose.Types.ObjectId.isValid(req.body.finalprojectassignmentid)) {
+                return res.json({
+                    message: "Invalid ID Found",
+                    status: false,
+                });
             }
-        });
-
-assignmentRoute.route("/addFinalProjectSubmission")
-    .post(
-        finalAssignmentSubmissionsUpload.single("ufile"),
-        findMulterError(),
-        (req, res) => {
-            try {
-                if (!mongoose.Types.ObjectId.isValid(req.body.finalProjectAssignmentID)) {
-                    return res.json({
-                        message: "Invalid ID Found",
-                        status: false,
-                    });
+            let updateObject;
+            if (req?.file) {
+                updateObject = {
+                    projectName: req.body.title,
+                    projectDescription: req.body.description,
+                    projectDeadLine: req.body.deadline,
+                    uploadedFileBySupervisor: "http://localhost:1337/download/submission-attachments/" + req.file.filename,
+                    supAttachOriginalName: req.file.originalname,
+                    supAttachFileSize: req.file.size,
+                    acceptedBy: req.body.supervisor,
+                    isProjectAssigned: true,
+                    assignedOn: Date.now()
                 }
-                let updateObject;
-                if (req?.file) {
-                    console.log("File Found")
-                    updateObject = {
-                        uploadedDescriptionByEmployee: req.body.note,
-                        uploadedFileByEmployee: "http://localhost:1337/download/submissions/" + req.file.filename,
-                        empAttachOriginalName: req.file.originalname,
-                        empAttachFileSize: req.file.size,
-                        submittedDate: Date.now(),
-                        isProjectSubmitted: true
-                    }
-                } else {
-                    console.log("File not found")
-                    updateObject = {
-                        uploadedDescriptionByEmployee: req.body.note,
-                        submittedDate: Date.now(),
-                        isProjectSubmitted: true
-                    }
+            } else {
+                updateObject = {
+                    projectName: req.body.title,
+                    projectDescription: req.body.description,
+                    projectDeadLine: req.body.deadline,
+                    acceptedBy: req.body.supervisor,
+                    isProjectAssigned: true,
+                    assignedOn: Date.now()
                 }
-                FinalProjectAssignment.updateOne(
-                    { _id: req.body.finalProjectAssignmentID },
-                    { $set: updateObject },
-                    function (err, result) {
-                        if (!err) {
-                            res.json({ status: true, message: "Final Project Assigned Successfully" });
-                        } else {
-                            res.json({ status: false, message: "Error in Submission" });
-                        }
-                    }
-                );
-            } catch (err) {
-                console.log(err);
-                res.json({ status: false, message: "Backend Error" });
             }
-        });
+            FinalProjectAssignment.updateOne(
+                { _id: req.body.finalprojectassignmentid },
+                { $set: updateObject },
+                function (err, result) {
+                    if (!err) {
+                        res.json({ status: true, message: "Final Project Assigned Successfully" });
+                    } else {
+                        res.json({ status: false, message: "Error in Submission" });
+                    }
+                }
+            );
+        } catch (err) {
+            console.log(err);
+            res.json({ status: false, message: "Backend Error" });
+        }
+    });
 
-assignmentRoute.route("/finalprojectassignment/request/:id").get((req, res) => {
+assignmentRoute.route("/addFinalProjectSubmission").post(
+    finalAssignmentSubmissionsUpload.single("ufile"),
+    findMulterError(),
+    (req, res) => {
+        try {
+            if (!mongoose.Types.ObjectId.isValid(req.body.finalProjectAssignmentID)) {
+                return res.json({
+                    message: "Invalid ID Found",
+                    status: false,
+                });
+            }
+            let updateObject;
+            if (req?.file) {
+                console.log("File Found")
+                updateObject = {
+                    uploadedDescriptionByEmployee: req.body.note,
+                    uploadedFileByEmployee: "http://localhost:1337/download/submissions/" + req.file.filename,
+                    empAttachOriginalName: req.file.originalname,
+                    empAttachFileSize: req.file.size,
+                    submittedDate: Date.now(),
+                    isProjectSubmitted: true
+                }
+            } else {
+                console.log("File not found")
+                updateObject = {
+                    uploadedDescriptionByEmployee: req.body.note,
+                    submittedDate: Date.now(),
+                    isProjectSubmitted: true
+                }
+            }
+            FinalProjectAssignment.updateOne(
+                { _id: req.body.finalProjectAssignmentID },
+                { $set: updateObject },
+                function (err, result) {
+                    if (!err) {
+                        res.json({ status: true, message: "Final Project Assigned Successfully" });
+                    } else {
+                        res.json({ status: false, message: "Error in Submission" });
+                    }
+                }
+            );
+        } catch (err) {
+            console.log(err);
+            res.json({ status: false, message: "Backend Error" });
+        }
+    });
+
+assignmentRoute.route("/finalprojectassignment/request/:uid/:did").get((req, res) => {
     try {
-        const userId = req.params.id;
-        const data = { userId }
+        const userId = req.params.uid;
+        const departmentId = req.params.did;
+        const data = { userId, departmentId }
         const newFinalProjectAssignment = new FinalProjectAssignment(data);
         FinalProjectAssignment.findOne({ userId: userId }, (err, data) => {
             if (data) {
@@ -238,8 +244,8 @@ assignmentRoute.route("/finalprojectassignment/request/:id").get((req, res) => {
     }
 });
 
-assignmentRoute.route("/finalprojectassignment/showRequests").get(async (req, res) => {
-    const assignments = await FinalProjectAssignment.find({ isProjectAssigned: false })
+assignmentRoute.route("/finalprojectassignment/showRequests/:depid").get(async (req, res) => {
+    const assignments = await FinalProjectAssignment.find({ isProjectAssigned: false, departmentId: req.params.depid })
         .populate(
             {
                 path: "userId",
@@ -249,77 +255,76 @@ assignmentRoute.route("/finalprojectassignment/showRequests").get(async (req, re
     res.json(assignments);
 });
 
-assignmentRoute.route("/finalprojectassignment/updateFinalProjectAssignment")
-    .post(
-        finalAssignmentAttachmentUpload.single("newFile"),
-        findMulterError(),
-        (req, res) => {
-            const newTitle = req.body.title
-            const newDescription = req.body.description
-            const newDeadLine = req.body.deadline
-            const finalProjectAssignmentID = req.body.finalprojectassignmentid
-            const newFileData = req?.file
-            if (!mongoose.Types.ObjectId.isValid(finalProjectAssignmentID)) {
-                return res.json({
-                    message: "Invalid ID Found",
-                    status: false,
-                });
+assignmentRoute.route("/finalprojectassignment/updateFinalProjectAssignment").post(
+    finalAssignmentAttachmentUpload.single("newFile"),
+    findMulterError(),
+    (req, res) => {
+        const newTitle = req.body.title
+        const newDescription = req.body.description
+        const newDeadLine = req.body.deadline
+        const finalProjectAssignmentID = req.body.finalprojectassignmentid
+        const newFileData = req?.file
+        if (!mongoose.Types.ObjectId.isValid(finalProjectAssignmentID)) {
+            return res.json({
+                message: "Invalid ID Found",
+                status: false,
+            });
+        }
+        let setObject;
+        if (newFileData) {
+            setObject = {
+                projectDescription: newDescription,
+                projectDeadLine: newDeadLine,
+                projectName: newTitle,
+                uploadedFileBySupervisor: "http://localhost:1337/download/submission-attachments/" + newFileData.filename,
+                supAttachOriginalName: req.file.originalname,
+                supAttachFileSize: req.file.size,
+                assignedOn: Date.now()
             }
-            let setObject;
-            if (newFileData) {
+        } else {
+            if (req.body.needtoDeleteAttachment === "true") {
                 setObject = {
                     projectDescription: newDescription,
                     projectDeadLine: newDeadLine,
                     projectName: newTitle,
-                    uploadedFileBySupervisor: "http://localhost:1337/download/submission-attachments/" + newFileData.filename,
-                    supAttachOriginalName: req.file.originalname,
-                    supAttachFileSize: req.file.size,
-                    assignedOn: Date.now()
+                    assignedOn: Date.now(),
+                    uploadedFileBySupervisor: "",
+                    supAttachOriginalName: "",
+                    supAttachFileSize: "",
                 }
             } else {
-                if (req.body.needtoDeleteAttachment === "true") {
-                    setObject = {
-                        projectDescription: newDescription,
-                        projectDeadLine: newDeadLine,
-                        projectName: newTitle,
-                        assignedOn: Date.now(),
-                        uploadedFileBySupervisor: "",
-                        supAttachOriginalName: "",
-                        supAttachFileSize: "",
-                    }
-                } else {
-                    setObject = {
-                        projectDescription: newDescription,
-                        projectDeadLine: newDeadLine,
-                        projectName: newTitle,
-                        assignedOn: Date.now()
-                    }
+                setObject = {
+                    projectDescription: newDescription,
+                    projectDeadLine: newDeadLine,
+                    projectName: newTitle,
+                    assignedOn: Date.now()
                 }
             }
-            try {
-                FinalProjectAssignment.updateOne(
-                    { _id: finalProjectAssignmentID },
-                    { $set: setObject }
-                ).then((result) => {
-                    return res.json({
-                        message: "Final Project Assignment Updated Successfully",
-                        status: true,
-                    });
-                })
-                    .catch((err) => {
-                        return res.json({
-                            message: "Error in Updating Final Project Assignment",
-                            status: false,
-                        });
-                    });
-            } catch (err) {
+        }
+        try {
+            FinalProjectAssignment.updateOne(
+                { _id: finalProjectAssignmentID },
+                { $set: setObject }
+            ).then((result) => {
                 return res.json({
-                    message: err,
-                    status: false,
+                    message: "Final Project Assignment Updated Successfully",
+                    status: true,
                 });
-            }
+            })
+                .catch((err) => {
+                    return res.json({
+                        message: "Error in Updating Final Project Assignment",
+                        status: false,
+                    });
+                });
+        } catch (err) {
+            return res.json({
+                message: err,
+                status: false,
+            });
+        }
 
-        });
+    });
 
 assignmentRoute.route("/finalprojectassignment/deleteAssignedAssignment").post(async (req, res) => {
     const projectID = req.body.projectID;
