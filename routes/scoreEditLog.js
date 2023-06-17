@@ -3,8 +3,9 @@ const scoreEditLog = express.Router();
 
 const Users = require("../models/user.model");
 const ScoreEditLog = require("../models/scoreEditLog.model");
+const Department = require("../models/department.model");
 
-scoreEditLog.post("/storeScore", async (req, res) => {
+scoreEditLog?.post("/storeScore", async (req, res) => {
   const { empId, score, feedback, show, projectName, gradedBy } = req.body;
 
   const [user] = await Users.find({ empId: empId });
@@ -37,7 +38,7 @@ scoreEditLog.post("/storeScore", async (req, res) => {
   }
 });
 
-scoreEditLog.put("/updateScore", async (req, res) => {
+scoreEditLog?.put("/updateScore", async (req, res) => {
   const { empId, score, feedback, show, projectName, gradedBy } = req.body;
   const upgradedOn = Date?.now();
 
@@ -59,11 +60,11 @@ scoreEditLog.put("/updateScore", async (req, res) => {
     } else {
       // If a score log already exists, update it
       scoreEditLog.projectName = projectName;
-      scoreEditLog?.score?.push(score);
-      scoreEditLog?.feedback?.push(feedback);
-      scoreEditLog?.show?.push(show);
-      scoreEditLog?.upgradedOn?.push(upgradedOn);
-      scoreEditLog?.upgradedBy?.push(gradedBy);
+      scoreEditLog?.score.push(score);
+      scoreEditLog?.feedback.push(feedback);
+      scoreEditLog?.show.push(show);
+      scoreEditLog?.upgradedOn.push(upgradedOn);
+      scoreEditLog?.upgradedBy.push(gradedBy);
     }
 
     scoreEditLog
@@ -166,9 +167,11 @@ scoreEditLog?.get("/getScoreEditLog", async (req, res) => {
           dayNight;
         dateArr.push(submittedOn);
       }
+      const department = await Department.findOne({ _id: user?.department });
       editlogResult = {
         projectName: editlog.projectName,
         userEmpId,
+        department: department?.depName,
         employeeUserImage,
         submittedBy: name,
         show: editlog?.show,
