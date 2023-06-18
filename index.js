@@ -52,6 +52,7 @@ app.use("/submissions", require("./routes/quizAnswers"));
 app.use("/editunits", require("./routes/editunits"));
 app.use("/editkts", require("./routes/editkts"));
 app.use("/editarticles", require("./routes/editarticles"));
+app.use("/editForums", require("./routes/editForums"));
 app.use("/editquestions", require("./routes/editquestions"));
 app.use(require("./routes/feedback"));
 app.use(require("./routes/projectScore"));
@@ -65,11 +66,9 @@ mongoose.set("strictQuery", false);
 // format
 
 // mongodb+srv://<username>:<password>@cluster0.mongodb.net/<database>?retryWrites=true&w=majority
-const connUrl = "mongodb://127.0.0.1:27017/nets";
+// const connUrl = "mongodb://127.0.0.1:27017/nets";
 // const connUrl = "mongodb://localhost:27017/NETS";
 // "mongodb+srv://admin:o2rRfSYGKkUCHG8s@cluster0.eh378xa.mongodb.net/netsTest?retryWrites=true&w=majority";
-
-// const connUrl = "mongodb://localhost:27017/NETS";
 
 mongoose
   .connect(process.env.MONGO_LOCAL_URI, {
