@@ -2,7 +2,6 @@ const express = require("express");
 const userRoutes = express.Router();
 const User = require("../models/user.model");
 const sendMail = require("../mail/mailer");
-// const UserRole = require("../models/userRole.model");
 const auth = require("../middleware/checkPermission");
 const ur = require("../userRoles/userRoles");
 

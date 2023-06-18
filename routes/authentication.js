@@ -7,7 +7,6 @@ require("dotenv").config();
 const User = require("../models/user.model");
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const client = new OAuth2Client(GOOGLE_CLIENT_ID);
-const UserRole = require("../models/userRole.model")
 
 async function verifyGoogleToken(token) {
   try {

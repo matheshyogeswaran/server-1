@@ -17,7 +17,7 @@ editarticleRoutes.route("/add").post(function (req, res) {
   let editarticle = new EditArticleData(req.body);
 
   // Format the updated_at date
-  editkt.updated_at = moment().format("YYYY-MM-DD hh:mm:ss.SS A");
+  editarticle.updated_at = moment().format("YYYY-MM-DD hh:mm:ss.SS A");
 
   editarticle
     .save()

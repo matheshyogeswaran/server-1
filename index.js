@@ -43,18 +43,24 @@ app.use(require("./routes/finalProjectAssignment"));
 app.use(require("./routes/badges"));
 app.use(require("./routes/quizFront"));
 app.use(require("./routes/quizReport"));
+app.use(require("./routes/notifications"));
+app.use(require("./routes/feedback"));
+app.use(require("./routes/projectScore"));
 
 app.use("/units", require("./routes/units"));
 app.use("/kts", require("./routes/ktsessions"));
 app.use("/arts", require("./routes/articles"));
 app.use("/submissions", require("./routes/quizAnswers"));
-
 app.use("/editunits", require("./routes/editunits"));
 app.use("/editkts", require("./routes/editkts"));
 app.use("/editarticles", require("./routes/editarticles"));
 app.use("/editquestions", require("./routes/editquestions"));
-app.use(require("./routes/feedback"));
-app.use(require("./routes/projectScore"));
+
+
+app.use("/deleteunits", require("./routes/deleteunits"));
+app.use("/deletekts", require("./routes/deletekts"));
+app.use("/deletearticles", require("./routes/deletearticles"));
+app.use("/deletequestions", require("./routes/deletequestions"));
 
 mongoose.set("strictQuery", false);
 // format
@@ -62,9 +68,9 @@ mongoose.set("strictQuery", false);
 // mongodb+srv://<username>:<password>@cluster0.mongodb.net/<database>?retryWrites=true&w=majority
 const connUrl = "mongodb://127.0.0.1:27017/nets";
 // const connUrl = "mongodb://localhost:27017/NETS";
-// const connUrl =
-//   "mongodb+srv://heshani:heshani@cluster0.ck9bx.mongodb.net/test?retryWrites=true&w=majority";
 // "mongodb+srv://admin:o2rRfSYGKkUCHG8s@cluster0.eh378xa.mongodb.net/netsTest?retryWrites=true&w=majority";
+
+// const connUrl = "mongodb://localhost:27017/NETS";
 
 mongoose
   .connect(process.env.MONGO_LOCAL_URI, {

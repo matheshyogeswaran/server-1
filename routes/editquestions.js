@@ -17,7 +17,7 @@ editquestionRoutes.route("/add").post(function (req, res) {
   let editquestion = new EditQuestionData(req.body);
 
   // Format the updated_at date
-  editkt.updated_at = moment().format("YYYY-MM-DD hh:mm:ss.SS A");
+  editquestion.updated_at = moment().format("YYYY-MM-DD hh:mm:ss.SS A");
 
   editquestion
     .save()
