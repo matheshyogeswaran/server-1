@@ -1,6 +1,7 @@
 const express = require("express");
 const assignmentRoute = express.Router();
 const User = require('../models/user.model');
+// const Notification = require('../models/Notification.model');
 const FinalProjectAssignment = require("../models/finalProjectAssignment.model");
 const path = require("path");
 const { finalAssignmentAttachmentUpload } = require("../multer/finalAssignmentAttachments-config")
@@ -125,6 +126,7 @@ assignmentRoute.route("/addFinalAssignment").post(
     findMulterError(),
     (req, res) => {
         try {
+            const requestedBy = req?.body?.requestedby;
             if (!mongoose.Types.ObjectId.isValid(req.body.finalprojectassignmentid)) {
                 return res.json({
                     message: "Invalid ID Found",
@@ -157,8 +159,15 @@ assignmentRoute.route("/addFinalAssignment").post(
             FinalProjectAssignment.updateOne(
                 { _id: req.body.finalprojectassignmentid },
                 { $set: updateObject },
-                function (err, result) {
+                async function (err, result) {
                     if (!err) {
+                        try {
+                            const user = await User.findById(requestedBy);
+                            user.notifications.push({ message: "Your final project has been assigned" });
+                            user.save();
+                        } catch (err) {
+                            console.log(err);
+                        }
                         res.json({ status: true, message: "Final Project Assigned Successfully" });
                     } else {
                         res.json({ status: false, message: "Error in Submission" });
@@ -175,6 +184,7 @@ assignmentRoute.route("/addFinalProjectSubmission").post(
     finalAssignmentSubmissionsUpload.single("ufile"),
     findMulterError(),
     (req, res) => {
+        const supervisor = req.body.supervisor;
         try {
             if (!mongoose.Types.ObjectId.isValid(req.body.finalProjectAssignmentID)) {
                 return res.json({
@@ -204,9 +214,12 @@ assignmentRoute.route("/addFinalProjectSubmission").post(
             FinalProjectAssignment.updateOne(
                 { _id: req.body.finalProjectAssignmentID },
                 { $set: updateObject },
-                function (err, result) {
+                async function (err, result) {
                     if (!err) {
-                        res.json({ status: true, message: "Final Project Assigned Successfully" });
+                        const user = await User.findById(supervisor);
+                        user.notifications.push({ message: "The final project you assigned is submitted" });
+                        user.save();
+                        res.json({ status: true, message: "Final Project Submitted Successfully" });
                     } else {
                         res.json({ status: false, message: "Error in Submission" });
                     }
@@ -230,7 +243,14 @@ assignmentRoute.route("/finalprojectassignment/request/:uid/:did").get((req, res
             } else {
                 newFinalProjectAssignment.save()
                     .then(() => {
-                        res.json({ status: true, message: "Final Project Requested Successfully" });
+                        User.updateMany(
+                            { userRole: "Supervisor", department: departmentId },
+                            { $push: { notifications: { message: "Final Project Assignment is Requested" } } }
+                        ).then(() => {
+                            res.json({ status: true, message: "Final Project Requested Successfully" });
+                        }).catch((error) => {
+                            res.json({ status: true, message: "Final Project Requested Successfully" });
+                        })
                     })
                     .catch((err) => {
                         res.json({ status: false, message: "Error in Request Final Project" });

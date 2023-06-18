@@ -37,7 +37,13 @@ evaluateSubmission.post("/toEvaluateSubmission", async (req, res) => {
       data
     );
     // sending updating status to forntend
-    if (updated?.modifiedCount === 1) res.json(true);
+    if (updated?.modifiedCount === 1) {
+      if (show == true) {
+        users.notifications.push({ message: "Your final project assignment is evaluated. You can view the results." });
+        users.save();
+      }
+      return res.json(true);
+    }
     else res.json(false);
   } catch (err) {
     console.error(err);

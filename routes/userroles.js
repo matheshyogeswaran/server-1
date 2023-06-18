@@ -1,17 +1,14 @@
 const express = require("express");
 const userRoleRoute = express.Router();
-const UserRole = require("../models/userRole.model");
 const User = require("../models/user.model");
 
 userRoleRoute.route("/userRoles/changeUserRole").post(function (req, res) {
   try {
     const userid = req.body.userID;
     const userRole = req.body.newRole;
-    console.log(userid)
-    console.log(userRole)
     User.updateOne(
       { _id: userid },
-      { $set: { userRole: userRole, verified: true} }
+      { $set: { userRole: userRole, verified: true }, $push: { notifications: { message: "Your user role is changed to " + userRole + ". From next login, It will take effect." } } }
     )
       .then((result) => {
         console.log(result)
