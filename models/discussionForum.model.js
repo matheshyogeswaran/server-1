@@ -5,21 +5,21 @@ const Forum = new mongoose.Schema(
     topic: { type: String },
     description: { type: String },
     createdBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
-    createdOn: { type: Date, default: Date.now() },
+    createdOn: { type: String },
     status: { type: String, default: "Active" },
     attachmentAllowed: { type: Boolean, default: false },
     posts: [
       {
         description: { type: String },
         createdBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
-        createdOn: { type: Date, default: Date.now() },
+        createdOn: { type: String },
         attachment: { type: String },
         replies: [
           {
             description: { type: String },
             attachment: { type: String },
             createdBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
-            createdOn: { type: Date, default: Date.now() },
+            createdOn: { type: String },
           },
         ],
       },
