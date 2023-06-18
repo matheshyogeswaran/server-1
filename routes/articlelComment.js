@@ -1,6 +1,7 @@
 const express = require("express");
 const articleCommentRoutes = express.Router();
 const articleComment = require("../models/Article.model");
+const moment = require("moment");
 
 articleCommentRoutes.route("/get-all-articles").get(function (req, res) {
   articleComment.find({}, (err, articles) => {
@@ -25,11 +26,13 @@ articleCommentRoutes
           res.status(500).send(err);
         } else {
           const sortedComments = comment.comments.sort(
-            (a, b) => b.commentedOn - a.commentedOn
+            (a, b) => new Date(b.commentedOn) - new Date(a.commentedOn)
           );
 
           sortedComments.forEach((comment) => {
-            comment.replies.sort((a, b) => b.repliedOn - a.repliedOn);
+            comment.replies.sort(
+              (a, b) => new Date(b.repliedOn) - new Date(a.repliedOn)
+            );
           });
 
           comment.comments = sortedComments;
@@ -60,8 +63,11 @@ articleCommentRoutes
     try {
       const artiId = req.params.artiId;
       const arti = await articleComment.findById(artiId);
-
-      arti.comments.push(req.body);
+      let newComment = {
+        ...req.body,
+        commentedOn: moment().format("YYYY-MM-DD hh:mm:ss.SS A"),
+      };
+      arti.comments.push(newComment);
       arti.save();
 
       res.status(200).json({
@@ -82,7 +88,12 @@ articleCommentRoutes
       const arti = await articleComment.findById(artiId);
       const comment = arti.comments.id(comId);
 
-      comment.replies.push(req.body);
+      let newReply = {
+        ...req.body,
+        repliedOn: moment().format("YYYY-MM-DD hh:mm:ss.SS A"),
+      };
+
+      comment.replies.push(newReply);
       arti.save();
 
       res.status(200).json({

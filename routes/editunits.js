@@ -17,7 +17,7 @@ editunitRoutes.route("/add").post(function (req, res) {
   let editunit = new EditUnitData(req.body);
 
   // Format the updated_at date
-  editkt.updated_at = moment().format("YYYY-MM-DD hh:mm:ss.SS A");
+  editunit.updated_at = moment().format("YYYY-MM-DD hh:mm:ss.SS A");
 
   editunit
     .save()

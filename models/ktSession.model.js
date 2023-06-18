@@ -29,12 +29,12 @@ const KtSession = new mongoose.Schema(
       {
         addedBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
         comment: { type: String },
-        commentedOn: { type: Date, default: Date.now() },
+        commentedOn: { type: String },
         replies: [
           {
             addedBy: { type: mongoose.Types.ObjectId, ref: "UserData" },
             reply: { type: String },
-            repliedOn: { type: Date, default: Date.now() },
+            repliedOn: { type: String },
           },
         ],
       },
