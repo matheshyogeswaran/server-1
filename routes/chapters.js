@@ -46,12 +46,14 @@ chapterRoutes.route("/chapters/isChapterAvailable").post(function (req, res) {
 chapterRoutes.route("/chapters/addChapter").post(async (req, res) => {
 
   const chapterName = req.body.chapterName;
+  const chapId = req.body.chapId;
   const depID = req.body.depID;
   const createdBy = req.body.userID;
   const createdOn = Date.now();
 
   const chapterDetails = new Chapter({
     chapterName,
+    chapId,
     depID,
     createdBy,
     createdOn,
@@ -138,6 +140,35 @@ chapterRoutes.route("/chapters/deleteChapter").post(async (req, res) => {
 //-----------------------------------------------------------------------------------
 chapterRoutes.route("/chapters/:id").put(async (req, res) => {
   const { id } = req.params;
+  const { status, deleteReason } = req.body;
+
+
+  try {
+    const updatedChapter = await Chapter.findByIdAndUpdate(
+      id,
+      { status: status, deleteReason: deleteReason }, // Include the delete reason in the update
+      { new: true }
+    );
+
+    if (!updatedChapter) {
+      return res.status(404).send({
+        message: `Chapter is not found.`,
+      });
+    }
+
+    res.send({
+      message: `Chapter temporarily deleted successfully.`,
+      data: updatedChapter,
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: `Error deleting Chapter: ${err.message}`,
+    });
+  }
+});
+//------------------------------------------------------------------------------------------
+chapterRoutes.route("/retrievechapters/:id").put(async (req, res) => {
+  const { id } = req.params;
   const { status } = req.body;
 
   Chapter.findByIdAndUpdate(id, { status: status }, { new: true })
@@ -148,7 +179,7 @@ chapterRoutes.route("/chapters/:id").put(async (req, res) => {
         });
       }
       res.send({
-        message: `Chapter was temporarly deleted successfully.`,
+        message: `Chapter retrieved successfully.`,
         data: updatedChapter
       });
     })
