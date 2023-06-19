@@ -3,7 +3,8 @@ const app = express();
 const cors = require("cors");
 const mongoose = require("mongoose");
 require("dotenv").config();
-
+const path = require("path");
+const fs = require("fs");
 app.use(
   cors({
     origin: ["http://localhost:3000"],
@@ -85,6 +86,24 @@ app.get("/", (req, res) => {
   return res.json({
     message: "Access to this page is not allowed",
     active: false,
+  });
+});
+
+
+app.get("/file/:filename", (req, res) => {
+  const filename = req.params.filename;
+  if(! filename){
+    return res.status(200).send("Please provide a filename");
+  }
+  // Replace with the actual file path
+  const filePath = path.join(__dirname, `/uploads/finalAssignmentSubmissions/${filename}`);
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send("Failed to delete the file.");
+    } else {
+      res.send("File deleted successfully.");
+    }
   });
 });
 
