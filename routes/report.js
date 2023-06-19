@@ -5,7 +5,7 @@ const users = require("../models/user.model");
 const departments = require("../models/department.model");
 const QuizSubmissions = require("../models/quizSubmission.model");
 const KtSessions = require("../models/ktSession.model");
-const Articles = require("../models/article.model");
+const Articles = require("../models/Article.model");
 
 user?.get("/showAllUsers", async (req, res) => {
   try {
